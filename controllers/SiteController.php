@@ -287,7 +287,6 @@ class SiteController extends Controller
         }
         return $this->render('personal-view');
     }
-    ///gfndfxgnfxgn
     public function actionPlus($numb, $id = null, $branch = null)
     {
         if (Yii::$app->user->isGuest) {
