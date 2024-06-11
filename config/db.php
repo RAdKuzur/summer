@@ -7,6 +7,8 @@ return [
     'password' => 'root',
     'charset' => 'utf8',
 
+
+    //comment
     // Schema cache options (for production environment)
     //'enableSchemaCache' => true,
     //'schemaCacheDuration' => 60,
