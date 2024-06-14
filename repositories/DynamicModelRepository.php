@@ -28,14 +28,13 @@ class DynamicModelRepository
         $model->teams = $modelTeams;
         $this->save($model);
     }
-    public function updatePersonals($model, $requestPost){
+    public function updatePersonals(PersonalOffset $model, $requestPost){
         $modelPersonals = DynamicModel::createMultiple(PersonalOffsetDynamic::classname());
         DynamicModel::loadMultiple($modelPersonals, $requestPost);
         $model->personals = $modelPersonals;
         $this->save($model);
     }
     public function save($model) {
-
         if (!$model->save()) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }

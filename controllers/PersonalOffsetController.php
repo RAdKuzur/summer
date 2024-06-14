@@ -66,7 +66,7 @@ class PersonalOffsetController extends Controller
         $queryParams = Yii::$app->request->post();
         if (Yii::$app->user->isGuest) {
             return $this->redirect(['site/login']);
-            //return $this->redirect('index.php?r=site/login');
+
         }
         $array = $this->personalOffsetRepository->createModel($queryParams);
         return $this->render('index', [
@@ -118,11 +118,16 @@ class PersonalOffsetController extends Controller
      */
     public function actionUpdate($id)
     {
+
         $model = $this->personalOffsetRepository->findModel($id);
         $modelTeams = [Yii::createObject(PartyPersonal::class)];
         $requestPost = Yii::$app->request->post();
         if ($model->load($requestPost)) {
-            $this->dynamicModelRepository->updatePersonals($model, $requestPost);
+           // return $this->dynamicModelRepository->updatePersonals($model, $requestPost);
+            $modelTeams = DynamicModel::createMultiple(PartyPersonal::classname());
+            DynamicModel::loadMultiple($modelTeams, Yii::$app->request->post());
+            $model->personals = $modelTeams;
+            $model->save();
             return $this->redirect(['view', 'id' => $model->id]);
         }
 

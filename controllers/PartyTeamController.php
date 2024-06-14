@@ -58,6 +58,7 @@ class PartyTeamController extends Controller
      */
     public function actionIndex()
     {
+
         $queryParams = Yii::$app->request->queryParams;
 /*
         $searchModel = new SearchPartyTeam();
@@ -133,8 +134,8 @@ class PartyTeamController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->partyTeamRepository->findModel($id)->delete();
-
+        $model = $this->partyTeamRepository->findModel($id);
+        $model->delete();
         return $this->redirect(['index']);
     }
     /**

@@ -72,9 +72,36 @@ class PartyTeamRepository
             return new \DomainException('Model not saving');
         }
     }
-    public function deleteById($id){
-        $team = PartyTeam::find()->where(['id' => $id])->one();
-        $this->delete($team);
+    public function deleteById($id)
+    {
+        $teams = PartyTeam::find()->where(['team_id' => $id])->all();
+        foreach ($teams as $team) {
+            $models = History::find()->where(['party_team_id' => $team->id])->all();
+            foreach ($models as $model) {
+                if ($model != null) {
+                    $model->delete();
+                }
+            }
+            if ($team != null) {
+                $team->delete();
+            }
+        }
+    }
+
+    public function deleteByIdTeam($id)
+    {
+        $teams = PartyTeam::find()->where(['id' => $id])->all();
+        foreach ($teams as $team) {
+            $models = History::find()->where(['party_team_id' => $team->id])->all();
+            foreach ($models as $model) {
+                if ($model != null) {
+                    $model->delete();
+                }
+            }
+            if ($team != null) {
+                $team->delete();
+            }
+        }
     }
     public function findByTeamId($id):array
     {
@@ -93,10 +120,10 @@ class PartyTeamRepository
         }
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function delete(PartyTeam $team){
+    /*public function delete(PartyTeam $team){
         if (!$team->delete($team)) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
-    }
+    }*/
 
 }

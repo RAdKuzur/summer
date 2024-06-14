@@ -187,13 +187,15 @@ class TeamController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->teamRepository->findModel($id);
+        $model = $this->teamRepository->findModel($id);
+        $this->partyTeamRepository->deleteById($model->id);
+        $model->delete();
         return $this->redirect(['index']);
     }
 
     public function actionDeletePartyTeam($id, $modelId)
     {
-        $this->partyTeamRepository->deleteById($id);
+        $this->partyTeamRepository->deleteByIdTeam($id);
         return $this->redirect('index?r=team/update&id='.$modelId);
     }
 

@@ -106,7 +106,7 @@ echo '<button class="btn btn-primary" onclick="OpenBlock(\'techno\')"><span styl
 echo '<div id="techno" style="display: '.$visibleT.'">';
 echo '<h3>Голосование в <b>'.$model->team->name.'</b> за команду <b><font style="color: '.$model->color->code.'">'.$model->team_name.' ('.$model->color->name.')</font></b></h3>';
 echo '<br>';
-
+/*
 $form = ActiveForm::begin();
 
 echo $form->field($model, 'id')->hiddenInput()->label(false);
@@ -118,44 +118,44 @@ echo '</div>';
 echo '<div style="display: inline-block; vertical-align: bottom; padding-bottom: 16px"><button onclick="AddAtribute(1)" formaction="index.php?r=site/plus-val" class="plus-button">+</button></div>';
 echo '<div style="display: inline-block; vertical-align: bottom; padding-bottom: 16px"><button onclick="AddAtribute(2)" formaction="index.php?r=site/minus-val" class="minus-button">-</button></div>';
 ActiveForm::end();
-
-/*echo '<table class="table">';
+*/
+echo '<table class="table">';
 
 echo '<tr>';
 echo '<td>';
-echo Html::a('+8 баллов', \yii\helpers\Url::to(['site/plus', 'numb' => 8, 'id' => $model->id, 'branch' => 2]), ['class' => 'btn btn-success inline']);
+echo Html::a('+4 баллов', \yii\helpers\Url::to(['site/plus-score', 'numb' => 4, 'id' => $model->id, 'branch' => 2]), ['class' => 'btn btn-success inline']);
 echo '</td>';
 echo '<td>';
-echo Html::a('-8 баллов', \yii\helpers\Url::to(['site/minus', 'numb' => 8, 'id' => $model->id, 'branch' => 2]), ['class' => 'btn btn-danger inline']);
+echo Html::a('-4 баллов', \yii\helpers\Url::to(['site/minus-score', 'numb' => 4, 'id' => $model->id, 'branch' => 2]), ['class' => 'btn btn-danger inline']);
 echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
 echo '<td>';
-echo Html::a('+6 баллов', \yii\helpers\Url::to(['site/plus', 'numb' => 6, 'id' => $model->id, 'branch' => 2]), ['class' => 'btn btn-success inline']);
+echo Html::a('+3 баллов', \yii\helpers\Url::to(['site/plus-score', 'numb' => 3, 'id' => $model->id, 'branch' => 2]), ['class' => 'btn btn-success inline']);
 echo '</td>';
 echo '<td>';
-echo Html::a('-6 баллов', \yii\helpers\Url::to(['site/minus', 'numb' => 6, 'id' => $model->id, 'branch' => 2]), ['class' => 'btn btn-danger inline']);
+echo Html::a('-3 баллов', \yii\helpers\Url::to(['site/minus-score', 'numb' => 3, 'id' => $model->id, 'branch' => 2]), ['class' => 'btn btn-danger inline']);
 echo '</td>';
 echo '</tr>';
 echo '<tr>';
 echo '<td>';
-echo Html::a('+5 баллов', \yii\helpers\Url::to(['site/plus', 'numb' => 5, 'id' => $model->id, 'branch' => 2]), ['class' => 'btn btn-success inline']);
+echo Html::a('+2 баллов', \yii\helpers\Url::to(['site/plus-score', 'numb' => 2, 'id' => $model->id, 'branch' => 2]), ['class' => 'btn btn-success inline']);
 echo '</td>';
 echo '<td>';
-echo Html::a('-5 баллов', \yii\helpers\Url::to(['site/minus', 'numb' => 5, 'id' => $model->id, 'branch' => 2]), ['class' => 'btn btn-danger inline']);
+echo Html::a('-2 баллов', \yii\helpers\Url::to(['site/minus-score', 'numb' => 2, 'id' => $model->id, 'branch' => 2]), ['class' => 'btn btn-danger inline']);
 echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
 echo '<td>';
-echo Html::a('+1 баллов', \yii\helpers\Url::to(['site/plus', 'numb' => 1, 'id' => $model->id, 'branch' => 2]), ['class' => 'btn btn-success inline']);
+echo Html::a('+1 баллов', \yii\helpers\Url::to(['site/plus-score', 'numb' => 1, 'id' => $model->id, 'branch' => 2]), ['class' => 'btn btn-success inline']);
 echo '</td>';
 echo '<td>';
-echo Html::a('-1 баллов', \yii\helpers\Url::to(['site/minus', 'numb' => 1, 'id' => $model->id, 'branch' => 2]), ['class' => 'btn btn-danger inline']);
+echo Html::a('-1 баллов', \yii\helpers\Url::to(['site/minus-score', 'numb' => 1, 'id' => $model->id, 'branch' => 2]), ['class' => 'btn btn-danger inline']);
 echo '</td>';
 echo '</tr>';
-echo '</table>';*/
+echo '</table>';
 echo '</div>';
 echo '<hr>';
 
