@@ -3,16 +3,19 @@
 use yii\db\Migration;
 
 /**
- * Class m241121_094938_add_student_table
+ * Class m241121_163951_add_schools_table
  */
-class m241121_094938_add_student_table extends Migration
+class m241121_163951_add_schools_table extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-
+        $this->createTable('school', [
+            'id' => $this->primaryKey(),
+            'name' => $this->string(1000)->notNull(),
+        ]);
     }
 
     /**
@@ -20,9 +23,9 @@ class m241121_094938_add_student_table extends Migration
      */
     public function safeDown()
     {
-        echo "m241121_094938_add_student_table cannot be reverted.\n";
+        $this->dropTable('school');
 
-        return false;
+        return true;
     }
 
     /*
@@ -34,7 +37,7 @@ class m241121_094938_add_student_table extends Migration
 
     public function down()
     {
-        echo "m241121_094938_add_student_table cannot be reverted.\n";
+        echo "m241121_163951_add_schools_table cannot be reverted.\n";
 
         return false;
     }

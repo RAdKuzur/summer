@@ -1,7 +1,6 @@
 <?php
 namespace app\models\tournament_event;
 use Yii;
-use yii\base\Model;
 use yii\db\ActiveRecord;
 
 /**
@@ -39,5 +38,9 @@ class Tournament extends ActiveRecord
             'id' => 'ID',
             'name' => 'Название турнира',
         ];
+    }
+    public function __toString()
+    {
+        return $this->name;
     }
 }

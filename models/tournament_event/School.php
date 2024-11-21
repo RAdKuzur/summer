@@ -38,7 +38,11 @@ class School extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
+            'name' => 'Название школы',
         ];
+    }
+    public function __toString()
+    {
+        return $this->name; // Предположим, что у вас есть свойство name
     }
 }

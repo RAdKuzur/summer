@@ -53,7 +53,13 @@ AppAsset::register($this);
             ]],
             ['label' => 'Командные защиты', 'url' => ['/team/index']],
             ['label' => 'Личные защиты', 'url' => ['/personal-offset/index']],
-            ['label' => 'Турниры', 'url' => ['/tournament/index']],
+            ['label' => 'Турниры',
+                'items' => [
+                    ['label' => 'Турниры', 'url' => ['/tournament/index']],
+                    ['label' => 'Команды', 'url' => ['/squad/index']],
+                    ['label' => 'Школы', 'url' => ['/school/index']],
+                ]
+            ],
             Yii::$app->user->isGuest ? (
                 ['label' => 'Авторизация', 'url' => ['/site/login']]
             ) : (

@@ -16,11 +16,8 @@ use yii\db\ActiveRecord;
  */
 class Squad extends ActiveRecord
 {
-    public $id;
-    public $name;
-    public $total_score;
-    public $tournament_id;
-    public $school_id;
+    public School $schoolModel;
+    public Tournament $tournamentModel;
     /**
      * {@inheritdoc}
      */
@@ -49,19 +46,27 @@ class Squad extends ActiveRecord
         return [
             'id' => 'ID',
             'name' => 'Name',
-            'total_score' => 'Total Score',
+            'total_score' => 'Общий счёт',
             'tournament_id' => 'Tournament ID',
             'school_id' => 'School ID',
+            'school' => 'Название школы',
+            'tournament' => 'Турнир'
         ];
     }
     public static function fill(
         $name, $total_score, $tournament_id, $school_id
     ){
-        $entity = new static();
+        $entity = new Squad();
         $entity->name = $name;
         $entity->total_score = $total_score;
         $entity->tournament_id = $tournament_id;
         $entity->school_id = $school_id;
         return $entity;
+    }
+    public function getSchool(){
+        return $this->hasOne(School::class, ['id' => 'school_id']);
+    }
+    public function getTournament(){
+        return $this->hasOne(Tournament::class, ['id' => 'tournament_id']);
     }
 }

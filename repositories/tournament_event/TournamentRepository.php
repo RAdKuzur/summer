@@ -2,20 +2,18 @@
 
 namespace app\repositories\tournament_event;
 
-use app\models\tournament_event\SearchTournament;
-use app\models\tournament_event\Squad;
 use app\models\tournament_event\Tournament;
 use Yii;
 
 class TournamentRepository
-{   public SquadRepository $squadRepository;
+{
+    public SquadRepository $squadRepository;
     public function __construct(
         SquadRepository $squadRepository
     )
     {
         $this->squadRepository = $squadRepository;
     }
-
     public function getAll(){
         return Tournament::find()->all();
     }
@@ -25,8 +23,15 @@ class TournamentRepository
     }
     public function searchTournament($queryParams)
     {
-        $searchModel = Yii::createObject(SearchTournament::class);
+
+        $searchModel = Yii::createObject(\app\models\tournament_event\search\SearchTournament::class);
         $dataProvider = $searchModel->search($queryParams);
+        return [$searchModel,  $dataProvider];
+    }
+    public function searchSquad($queryParams, $tournamentId)
+    {
+        $searchModel = Yii::createObject(\app\models\tournament_event\search\SearchSquad::class);
+        $dataProvider = $searchModel->search($queryParams , $tournamentId);
         return [$searchModel,  $dataProvider];
     }
     public function createSquads($post, $tournament_id){

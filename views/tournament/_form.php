@@ -2,20 +2,45 @@
 /* @var $model \app\models\tournament_event\Tournament  */
 /* @var $modelSquads SquadForm */
 /* @var $schools \app\models\tournament_event\School */
-
+/* @var $dataProvider yii\data\ActiveDataProvider */
 use app\models\tournament_event\forms\SquadForm;
 use wbraganca\dynamicform\DynamicFormWidget;
+use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
 ?>
-<div class="personal-offset-form">
+<div class="tournament-form">
     <?php $form = ActiveForm::begin(['id' => 'dynamic-form']);?>
     <?= $form->field($model, 'name')->textInput(['maxlength' => true])->label('Название турнира') ?>
-    <div class="form-group">
-        <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
-    </div>
+    <?php
+    if($model->id != NULL) {
+        $modelId = $model->id;
+        echo GridView::widget([
+            'dataProvider' => $dataProvider,
+            // 'filterModel' => $searchModel,
+            'columns' => [
+                ['class' => 'yii\grid\SerialColumn'],
+                'name',
+                'total_score',
+                'school',
+                [
+                    'class' => 'yii\grid\DataColumn',
+                    'label' => 'Actions', // Заголовок столбца
+                    'format' => 'raw', // Чтобы использовать HTML
+                    'value' => function ($model) {
+                        global $modelId;
+                        return Html::a('Внести изменения', Url::to(['update-squad-from-form', 'id' => $model->id]), ['class' => 'btn btn-success']) . ' ' .
+                            Html::a('Просмотр', Url::to(['view-squad-from-form', 'id' => $model->id]), ['class' => 'btn btn-warning']) . ' ' .
+                            Html::a('Удалить', Url::to(['delete-squad-from-form', 'id' => $model->id]), ['class' => 'btn btn-danger']);
+                    },
+                ],
+            ],
+        ]);
+    }
+    ?>
     <div class="panel-body">
         <?php DynamicFormWidget::begin([
             'widgetContainer' => 'dynamicform_wrapper1', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
@@ -66,6 +91,9 @@ use yii\widgets\ActiveForm;
             <?php endforeach; ?>
         </div>
         <?php DynamicFormWidget::end(); ?>
+    </div>
+    <div class="form-group">
+        <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
     </div>
     <?php ActiveForm::end(); ?>
 </div>
