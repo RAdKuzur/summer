@@ -4,7 +4,6 @@ namespace app\controllers;
 
 use app\helpers\DrawHelper;
 
-use app\models\tournament_event\School;
 use app\models\tournament_event\Tournament;
 use app\repositories\tournament_event\GameRepository;
 use app\repositories\tournament_event\SquadRepository;
@@ -43,46 +42,58 @@ class DrawController extends Controller
         parent::__construct($id, $module, $config);
     }
     public function actionIndex($tournamentId){
-
         $tournament = $this->tournamentRepository->getById($tournamentId);
         $games = $this->gameRepository->getTourAndTournamentGames($tournament->current_tour, $tournamentId);
-
-        return $this->render('index', ['tournament' => $tournament, 'games' => $games]);
+        $query = $this->gameRepository->getTourAndTournamentGamesQuery($tournament->current_tour, $tournamentId);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+        return $this->render('index', ['tournament' => $tournament, 'games' => $games, 'dataProvider' => $dataProvider]);
     }
     public function actionCreate($tournamentId, $tour){
         /* @var $tournament Tournament */
         $tournament = $this->tournamentRepository->getById($tournamentId);
         if($tour == 1) {
-            $teamList = $this->drawService->createSquadList($tournamentId);
+            $squadList = $this->drawService->createSquadList($tournamentId);
         }
         else {
-            $teamList = $this->drawService->createNewSquadList($tournamentId);
+            $this->drawService->checkWinners($tournamentId, $tour);
+            $squadList = $this->drawService->createNewSquadList($tournamentId, $tour);
+            //var_dump('tours: ', $tour, $squadList);
         }
-        if (!DrawHelper::isPowerOfTwo(count($teamList))) {
+        if (!DrawHelper::isPowerOfTwo(count($squadList)) && count($squadList) != 0) {
             var_dump('Ошибка, колво команд не равно 2^n');
         }
-        $squads = $this->drawService->createGames($teamList, $tour, $tournamentId);
+        if($this->gameRepository->getZeroStatuses($tour, $tournamentId)) {
+            $squads = $this->drawService->createGames($squadList, $tour, $tournamentId);
+        }
         return $this->redirect(['index',
             'tournamentId' => $tournament->id,
         ]);
+    }
+    public function actionUpdate($id){
+        var_dump($id);
     }
     public function actionView($id){
         $model = $this->gameRepository->getById($id);
         $firstSquad = $this->squadRepository->getById($model->first_squad_id);
         $secondSquad = $this->squadRepository->getById($model->second_squad_id);
-        $firstDataProvider = $this->squadStudentGameRepository->getByGameId($model->id);
-        $secondDataProvider = $this->squadStudentGameRepository->getByGameId($model->id);
-        //$studentLists = $this->drawService->createStudentLists($firstSquadStudent, $secondSquadStudent);
-        $firstDataProvider = new ActiveDataProvider([
-            'query' => $this->squadStudentGameRepository->getByGameId($model->id),
-        ]);
-        $secondDataProvider = new ActiveDataProvider([
-            'query' => $this->squadStudentGameRepository->getByGameId($model->id),
-        ]);
+        $firstSquadStudent = $this->squadStudentRepository->getBySquadIdQuery($firstSquad->id);
+        $secondSquadStudent = $this->squadStudentRepository->getBySquadIdQuery($secondSquad->id);
+        $firstDataProvider = new ActiveDataProvider([ 'query' => $firstSquadStudent]);
+        $secondDataProvider = new ActiveDataProvider(['query' =>$secondSquadStudent]);
         return $this->render('view', [
             'model' => $model,
             'firstDataProvider' => $firstDataProvider,
             'secondDataProvider' => $secondDataProvider,
         ]);
+    }
+    public function actionPlusScore($id, $score, $gameId){
+        $this->squadStudentGameRepository->changeScore($id, $score);
+        $this->redirect(['view', 'id' => $gameId]);
+    }
+    public function actionMinusScore($id, $score, $gameId){
+        $this->squadStudentGameRepository->changeScore($id, -$score);
+        $this->redirect(['view', 'id' => $gameId]);
     }
 }

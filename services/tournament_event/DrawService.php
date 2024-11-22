@@ -5,6 +5,7 @@ namespace app\services\tournament_event;
 use app\helpers\DrawHelper;
 use app\models\tournament_event\Game;
 use app\models\tournament_event\general\SquadStudent;
+use app\models\tournament_event\general\SquadStudentGame;
 use app\models\tournament_event\Squad;
 use app\models\tournament_event\Tournament;
 use app\repositories\tournament_event\GameRepository;
@@ -42,15 +43,47 @@ class DrawService
         $arrayList = DrawHelper::sortByScore($arrayList);
         return $arrayList;
     }
-    public function createNewSquadList($tournamentId){
+    public function createNewSquadList($tournamentId, $tour){
         /* @var $squad Squad */
-        $squads = $this->squadRepository->getByTournamentId($tournamentId);
+        $squads = $this->gameRepository->getWinnerSquadId($tour - 1, $tournamentId);
         $arrayList = [];
         foreach ($squads as $squad){
             array_push($arrayList, ['id' => $squad->id, 'score'=> $this->squadRepository->getScore($squad)]);
         }
         $arrayList = DrawHelper::sortByScore($arrayList);
         return $arrayList;
+    }
+    public function checkWinners($tournamentId, $tour)
+    {
+        /* @var $game Game*/
+        $games = $this->gameRepository->getTourAndTournamentGames($tour - 1, $tournamentId);
+        foreach ($games as $game){
+            $firstScore = 0;
+            $secondScore = 0;
+            $firstSquad = SquadStudent::find()->where(['squad_id' => $game->first_squad_id])->all();
+            $secondSquad = SquadStudent::find()->where(['squad_id' => $game->second_squad_id])->all();
+            foreach ($firstSquad as $squad) {
+                $squadStudentGame = SquadStudentGame::find()
+                    ->andWhere(['squad_student_id' => $squad->id])
+                    ->andWhere(['game_id' => $game->id])
+                    ->one();
+                $firstScore += $squadStudentGame->score;
+            }
+            foreach ($secondSquad as $squad) {
+                $squadStudentGame = SquadStudentGame::find()
+                    ->andWhere(['squad_student_id' => $squad->id])
+                    ->andWhere(['game_id' => $game->id])
+                    ->one();
+                $secondScore += $squadStudentGame->score;
+            }
+            if ($firstScore > $secondScore) {
+                $game->status = 1;
+            }
+            if ($firstScore < $secondScore) {
+                $game->status = 2;
+            }
+            $game->save();
+        }
     }
     public function createGames($teamList, $tour, $tournamentId){
         /* @var $game Game */
