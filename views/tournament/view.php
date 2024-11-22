@@ -49,11 +49,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw', // Чтобы использовать HTML
                 'value' => function ($model) {
                     global $modelId;
-                    return Html::a('Внести изменения', Url::to(['update-squad', 'id' => $model->id]), ['class' => 'btn btn-success']) . ' ' .
-                        Html::a('Просмотр', Url::to(['view-squad', 'id' => $model->id]), ['class' => 'btn btn-warning']) . ' ' .
+                    return Html::a('Внести изменения', Url::to(['squad/update', 'id' => $model->id]), ['class' => 'btn btn-success']) . ' ' .
+                        Html::a('Просмотр', Url::to(['squad/view', 'id' => $model->id]), ['class' => 'btn btn-warning']) . ' ' .
                         Html::a('Удалить', Url::to(['delete-squad', 'id' => $model->id]), ['class' => 'btn btn-danger']);                },
             ],
         ],
     ]);
     ?>
+    <?= Html::a('Добавить жеребьёвку', ['draw/index', 'tournamentId' => $model->id], ['class' => 'btn btn-success']) ?>
 </div>

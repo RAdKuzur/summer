@@ -1,5 +1,6 @@
 <?php
 namespace app\models\tournament_event;
+use app\models\tournament_event\general\SquadStudent;
 use Yii;
 /**
  * This is the model class for table "student".
@@ -40,11 +41,26 @@ class Student extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'surname' => 'Surname',
-            'name' => 'Name',
-            'patronymic' => 'Patronymic',
+            'surname' => 'Фамилия',
+            'name' => 'Имя',
+            'patronymic' => 'Отчество',
             'school_id' => 'School ID',
-            'olymp_score' => 'Olymp Score',
+            'olymp_score' => 'Баллы',
+            'school' => 'Школа'
         ];
+    }
+    public function __toString()
+    {
+        return $this->surname.' '.$this->name.' '.$this->patronymic;
+    }
+    public function getSchool(){
+        return $this->hasOne(School::class, ['id' => 'school_id']);
+    }
+    public function getFullFio(){
+        return $this->surname.' '.$this->name.' '.$this->patronymic;
+    }
+    public function getSquadStudents()
+    {
+        return $this->hasMany(SquadStudent::class, ['student_id' => 'id']);
     }
 }

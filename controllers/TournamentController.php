@@ -58,6 +58,7 @@ class TournamentController extends Controller
         return $this->render('create', ['model' => $model, 'modelSquads' => $modelSquads, 'schools' => $schools]);
     }
     public function actionUpdate($id){
+        /* @var $model Tournament */
         $model = $this->tournamentRepository->getById($id);
         $modelSquads = [Yii::createObject(SquadForm::class)];
         $schools = $this->schoolRepository->getAll();
@@ -65,6 +66,7 @@ class TournamentController extends Controller
         $queryParams = Yii::$app->request->queryParams;
         $array = $this->tournamentRepository->searchSquad($queryParams, $id);
         if ($model->load(Yii::$app->request->post())) {
+            $model->current_tour = 0;
             $model->save();
             $this->tournamentRepository->createSquads($post, $model->id);
             return $this->redirect(['view', 'id' => $model->id]);

@@ -3,19 +3,19 @@
 use yii\db\Migration;
 
 /**
- * Class m241121_163932_add_tournament_table
+ * Class m241122_065719_add_squad_student_table
  */
-class m241121_163932_add_tournament_table extends Migration
+class m241122_065719_add_squad_student_table extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        $this->createTable('tournament', [
+        $this->createTable('squad_student', [
             'id' => $this->primaryKey(),
-            'name' => $this->string(1000)->notNull(),
-            'current_tour' => $this->integer(),
+            'student_id' => $this->integer()->notNull(),
+            'squad_id' => $this->integer()->notNull(),
         ]);
     }
 
@@ -24,7 +24,7 @@ class m241121_163932_add_tournament_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('tournament');
+        $this->dropTable('squad_student');
         return true;
     }
 
@@ -37,7 +37,7 @@ class m241121_163932_add_tournament_table extends Migration
 
     public function down()
     {
-        echo "m241121_163932_add_tournament_table cannot be reverted.\n";
+        echo "m241122_065719_add_squad_student_table cannot be reverted.\n";
 
         return false;
     }

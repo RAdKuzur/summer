@@ -1,11 +1,9 @@
 <?php
 
 namespace app\models\tournament_event\search;
-
 use app\models\tournament_event\Tournament;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-
 class SearchTournament extends Tournament
 {
     /**
@@ -16,6 +14,7 @@ class SearchTournament extends Tournament
         return [
             [['id'], 'integer'],
             [['name'], 'safe'],
+            [['current_tour'], 'integer']
         ];
     }
 

@@ -8,6 +8,7 @@ use yii\db\ActiveRecord;
  *
  * @property int $id
  * @property string $name
+ * @property int $current_tour
  */
 class Tournament extends ActiveRecord
 {
@@ -26,9 +27,11 @@ class Tournament extends ActiveRecord
     {
         return [
             [['name'], 'required'],
+            [['current_tour'], 'integer'],
             [['name'], 'string', 'max' => 1000],
         ];
     }
+
     /**
      * {@inheritdoc}
      */
@@ -37,6 +40,7 @@ class Tournament extends ActiveRecord
         return [
             'id' => 'ID',
             'name' => 'Название турнира',
+            'current_tour' => 'Текущий тур',
         ];
     }
     public function __toString()

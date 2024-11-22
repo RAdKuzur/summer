@@ -53,6 +53,7 @@ class Squad extends ActiveRecord
             'tournament' => 'Турнир'
         ];
     }
+
     public static function fill(
         $name, $total_score, $tournament_id, $school_id
     ){
@@ -62,6 +63,10 @@ class Squad extends ActiveRecord
         $entity->tournament_id = $tournament_id;
         $entity->school_id = $school_id;
         return $entity;
+    }
+    public function __toString()
+    {
+        return $this->name; // Предположим, что у вас есть свойство name
     }
     public function getSchool(){
         return $this->hasOne(School::class, ['id' => 'school_id']);

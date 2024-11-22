@@ -7,14 +7,12 @@ use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model \app\models\tournament_event\Student */
-/* @var $searchModel \app\models\tournament_event\search\SearchSquadStudent */
-/* @var $dataProvider yii\data\ActiveDataProvider */
-$this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Команды', 'url' => ['index']];
+$this->title = $model->surname.' '.$model->name.' '.$model->patronymic;
+$this->params['breadcrumbs'][] = ['label' => 'Участники', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="squad-view">
+<div class="student-view">
     <h1><?= Html::encode($this->title) ?></h1>
     <p>
         <?= Html::a('Редактировать', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -27,13 +25,10 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
     </p>
     <?=
-    GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-            'student',
-            ['class' => 'yii\grid\ActionColumn'],
+    DetailView::widget([
+        'model' => $model,
+        'attributes' => [
+            'surname', 'name', 'patronymic', 'school', 'olymp_score'
         ],
-    ]); ?>
+    ]) ?>
 </div>

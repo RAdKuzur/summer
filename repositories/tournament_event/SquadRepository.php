@@ -2,7 +2,9 @@
 
 namespace app\repositories\tournament_event;
 
+use app\models\tournament_event\general\SquadStudent;
 use app\models\tournament_event\Squad;
+use app\models\tournament_event\Student;
 use Yii;
 use yii\db\Exception;
 
@@ -39,5 +41,14 @@ class SquadRepository
         $searchModel = Yii::createObject(\app\models\tournament_event\search\SearchSquad::class);
         $dataProvider = $searchModel->searchAll($queryParams);
         return [$searchModel,  $dataProvider];
+    }
+    public function getScore(Squad $squad){
+        $score = 0;
+        $squadStudents = SquadStudent::find()->where(['squad_id' => $squad->id])->all();
+        foreach ($squadStudents as $squadStudent){
+            $student = Student::findOne($squadStudent->student_id);
+            $score += $student->olymp_score;
+        }
+        return $score;
     }
 }

@@ -23,4 +23,20 @@ class SearchStudent extends Student
         $query->andFilterWhere(['like', 'name', $this->name]);
         return $dataProvider;
     }
+    public function searchWithSchools($params, $schoolId){
+        $query = Student::find()->where(['school_id' => $schoolId]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+        $this->load($params);
+        if (!$this->validate()) {
+            return $dataProvider;
+        }
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'id' => $this->id,
+        ]);
+        $query->andFilterWhere(['like', 'name', $this->name]);
+        return $dataProvider;
+    }
 }

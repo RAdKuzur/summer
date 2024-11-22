@@ -58,6 +58,7 @@ AppAsset::register($this);
                     ['label' => 'Турниры', 'url' => ['/tournament/index']],
                     ['label' => 'Команды', 'url' => ['/squad/index']],
                     ['label' => 'Школы', 'url' => ['/school/index']],
+                    ['label' => 'Участники турниров', 'url' => ['/student/index']],
                 ]
             ],
             Yii::$app->user->isGuest ? (
