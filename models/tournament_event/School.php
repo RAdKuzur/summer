@@ -39,10 +39,14 @@ class School extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'name' => 'Название школы',
+            'score' => 'Очки'
         ];
     }
     public function __toString()
     {
         return $this->name; // Предположим, что у вас есть свойство name
+    }
+    public function getScore(){
+        return Student::find()->where(['school_id' => $this->id])->sum('olymp_score');
     }
 }

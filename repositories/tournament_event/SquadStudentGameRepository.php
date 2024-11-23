@@ -10,13 +10,16 @@ class SquadStudentGameRepository
 {
     public SquadRepository $squadRepository;
     public SquadStudentRepository $squadStudentRepository;
+    public GameRepository $gameRepository;
     public function __construct(
         SquadStudentRepository $squadStudentRepository,
-        SquadRepository $squadRepository
+        SquadRepository $squadRepository,
+        GameRepository $gameRepository
     )
     {
         $this->squadStudentRepository = $squadStudentRepository;
         $this->squadRepository = $squadRepository;
+        $this->gameRepository = $gameRepository;
     }
     public function fill($squadStudentId, $gameId, $score)
     {
@@ -47,6 +50,8 @@ class SquadStudentGameRepository
         $model = SquadStudentGame::findOne($id);
         $model->score = $model->score + $score;
         $model->save();
+    }
+    public function getTourScore($tour , $tournamentId){
     }
 
 }

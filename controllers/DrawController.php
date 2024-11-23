@@ -59,14 +59,11 @@ class DrawController extends Controller
         else {
             $this->drawService->checkWinners($tournamentId, $tour);
             $squadList = $this->drawService->createNewSquadList($tournamentId, $tour);
-            //var_dump('tours: ', $tour, $squadList);
         }
         if (!DrawHelper::isPowerOfTwo(count($squadList)) && count($squadList) != 0) {
             var_dump('Ошибка, колво команд не равно 2^n');
         }
-        if($this->gameRepository->getZeroStatuses($tour, $tournamentId)) {
-            $squads = $this->drawService->createGames($squadList, $tour, $tournamentId);
-        }
+        $squads = $this->drawService->createGames($squadList, $tour, $tournamentId);
         return $this->redirect(['index',
             'tournamentId' => $tournament->id,
         ]);

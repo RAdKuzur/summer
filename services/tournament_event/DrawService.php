@@ -47,8 +47,32 @@ class DrawService
         /* @var $squad Squad */
         $squads = $this->gameRepository->getWinnerSquadId($tour - 1, $tournamentId);
         $arrayList = [];
-        foreach ($squads as $squad){
-            array_push($arrayList, ['id' => $squad->id, 'score'=> $this->squadRepository->getScore($squad)]);
+        $games = $this->gameRepository->getTourAndTournamentGames($tour - 1, $tournamentId);
+        foreach ($games as $game){
+            $firstScore = 0;
+            $secondScore = 0;
+            $firstSquad = SquadStudent::find()->where(['squad_id' => $game->first_squad_id])->all();
+            $secondSquad = SquadStudent::find()->where(['squad_id' => $game->second_squad_id])->all();
+            foreach ($firstSquad as $squad) {
+                $squadStudentGame = SquadStudentGame::find()
+                    ->andWhere(['squad_student_id' => $squad->id])
+                    ->andWhere(['game_id' => $game->id])
+                    ->one();
+                $firstScore += $squadStudentGame->score;
+            }
+            foreach ($secondSquad as $squad) {
+                $squadStudentGame = SquadStudentGame::find()
+                    ->andWhere(['squad_student_id' => $squad->id])
+                    ->andWhere(['game_id' => $game->id])
+                    ->one();
+                $secondScore += $squadStudentGame->score;
+            }
+            if($secondScore > $firstScore){
+                array_push($arrayList, ['id' => $game->second_squad_id, 'score' => $secondScore ]);
+            }
+            if($secondScore < $firstScore){
+                array_push($arrayList, ['id' => $game->first_squad_id, 'score'=> $firstScore ]);
+            }
         }
         $arrayList = DrawHelper::sortByScore($arrayList);
         return $arrayList;

@@ -41,7 +41,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             'name',
-            'total_score',
             'school',
             [
                 'class' => 'yii\grid\DataColumn',
