@@ -42,6 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
             'name',
             'school',
+            'score',
             [
                 'class' => 'yii\grid\DataColumn',
                 'label' => 'Действия', // Заголовок столбца
@@ -56,4 +57,6 @@ $this->params['breadcrumbs'][] = $this->title;
     ]);
     ?>
     <?= Html::a('Добавить жеребьёвку', ['draw/index', 'tournamentId' => $model->id], ['class' => 'btn btn-success']) ?>
+    <?= Html::a('Перейти к матчам', ['view-game', 'tournamentId' => $model->id], ['class' => 'btn btn-primary']) ?>
+
 </div>

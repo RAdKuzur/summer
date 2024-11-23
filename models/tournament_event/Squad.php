@@ -2,6 +2,7 @@
 
 namespace app\models\tournament_event;
 
+use app\repositories\tournament_event\SquadRepository;
 use Yii;
 use yii\db\ActiveRecord;
 
@@ -45,12 +46,13 @@ class Squad extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
+            'name' => 'Название команды',
             'total_score' => 'Общий счёт',
             'tournament_id' => 'Tournament ID',
             'school_id' => 'School ID',
             'school' => 'Название школы',
-            'tournament' => 'Турнир'
+            'tournament' => 'Турнир',
+            'score' => 'Стартовые баллы'
         ];
     }
 
@@ -73,5 +75,10 @@ class Squad extends ActiveRecord
     }
     public function getTournament(){
         return $this->hasOne(Tournament::class, ['id' => 'tournament_id']);
+    }
+    public function getScore()
+    {
+        $repository = new SquadRepository();
+        return $repository->getScore($this);
     }
 }

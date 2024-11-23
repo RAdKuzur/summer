@@ -3,10 +3,12 @@
 namespace app\controllers;
 use app\models\tournament_event\forms\SquadForm;
 use app\models\tournament_event\Tournament;
+use app\repositories\tournament_event\GameRepository;
 use app\repositories\tournament_event\SchoolRepository;
 use app\repositories\tournament_event\SquadRepository;
 use app\repositories\tournament_event\TournamentRepository;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 
 class TournamentController extends Controller
@@ -14,17 +16,20 @@ class TournamentController extends Controller
     public TournamentRepository $tournamentRepository;
     public SchoolRepository $schoolRepository;
     public SquadRepository  $squadRepository;
+    public GameRepository $gameRepository;
     public function __construct(
         $id,
         $module,
         TournamentRepository $tournamentRepository,
         SchoolRepository $schoolRepository,
         SquadRepository $squadRepository,
+        GameRepository $gameRepository,
         $config = [])
     {
         $this->tournamentRepository = $tournamentRepository;
         $this->schoolRepository = $schoolRepository;
         $this->squadRepository = $squadRepository;
+        $this->gameRepository = $gameRepository;
         parent::__construct($id, $module, $config);
     }
 
@@ -88,10 +93,6 @@ class TournamentController extends Controller
         }
         return $this->redirect(['view', 'id' => $modelId]);
     }
-    public function actionUpdateSquad($id){
-    }
-    public function actionViewSquad($id){
-    }
     public function actionDeleteSquadFromForm($id)
     {
         $model = $this->squadRepository->getById($id);
@@ -101,11 +102,19 @@ class TournamentController extends Controller
         }
         return $this->redirect(['update', 'id' => $modelId]);
     }
-    public function actionUpdateSquadFromForm($id){
-
-    }
-    public function actionViewSquadFromForm($id){
-
+    public function actionViewGame($tournamentId)
+    {
+        $tournament = $this->tournamentRepository->getById($tournamentId);
+        $games = $this->gameRepository->getByTournamentId($tournamentId);
+        $query = $this->gameRepository->getByTournamentIdQuery($tournamentId);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+        return $this->render('view-game', [
+            'dataProvider' => $dataProvider,
+            'tournament' => $tournament,
+            'games' => $games,
+        ]);
     }
     public function actionDelete($id){
         $squads = $this->squadRepository->getByTournamentId($id);

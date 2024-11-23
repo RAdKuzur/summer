@@ -1,5 +1,4 @@
 <?php
-
 use app\models\tournament_event\Game;
 use app\models\tournament_event\general\SquadStudent;
 use app\models\tournament_event\general\SquadStudentGame;
@@ -13,7 +12,7 @@ use yii\widgets\Pjax;
 /* @var $tournament \app\models\tournament_event\Tournament */
 /* @var $games \app\models\tournament_event\Game */
 /* @var $dataProvider ActiveDataProvider*/
-$this->title = 'Жеребьёвка турнира '.$tournament->name;
+$this->title = 'Матчи турнира '.$tournament->name;
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?php
@@ -24,18 +23,10 @@ $(document).ready(function() {
 JS;
 $this->registerJs($script);
 ?>
-<div class="draw-index">
+<div class="tournament-view-game">
     <h1><?= Html::encode($this->title) ?></h1>
-    <h2>
-        Таблица матчей. <?php
-        if ($tournament->current_tour != 0) {
-            echo 'Тур ' . $tournament->current_tour;
-        }
-        ?>
-    </h2>
-
     <?php Pjax::begin(); ?>
-    <?= Html::a("Refresh", ['index', 'tournamentId' => $tournament->id], ['class' => 'hidden', 'id' => 'refreshButton']) ?>
+    <?= Html::a("Refresh", ['view-game', 'tournamentId' => $tournament->id], ['class' => 'hidden', 'id' => 'refreshButton']) ?>
     <br>
     <?php
         if($games != NULL) {
@@ -43,7 +34,7 @@ $this->registerJs($script);
                 'dataProvider' => $dataProvider,
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
-                    'firstSquad' , 'secondSquad',
+                    'firstSquad' , 'secondSquad', 'tour',
                     [
                         'class' => 'yii\grid\DataColumn',
                         'label' => 'Счёт', // Заголовок столбца
@@ -71,22 +62,19 @@ $this->registerJs($script);
                             return $firstScore.' : '.$secondScore;
                         },
                     ],
-                    ['class' => 'yii\grid\ActionColumn'],
                 ],
             ]);
         }
         else { ?>
             <p>
-                Жеребьёвка ещё не проводилась
+                Матчей нет.
             </p>
         <?php
         }
     ?>
     <?php Pjax::end(); ?>
-    <?=  Html::a("Провести жеребьёвку тура № ".($tournament->current_tour + 1),
-        Url::to(['create', 'tournamentId' => $tournament->id, 'tour' => $tournament->current_tour + 1]),
+    <?=  Html::a("Перейти к турниру ",
+        Url::to(['view', 'id' => $tournament->id]),
         ['class' => 'btn btn-success']); ?>
-    <?=  Html::a("Сбросить жеребьевку" ,
-        Url::to(['delete-draw-tournament', 'tournamentId' => $tournament->id]),
-        ['class' => 'btn btn-danger']); ?>
+
 </div>

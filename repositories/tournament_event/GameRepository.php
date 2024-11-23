@@ -24,6 +24,9 @@ class GameRepository
     public function getByTournamentId($tournamentId){
         return Game::find()->where(['tournament_id' => $tournamentId])->all();
     }
+    public function getByTournamentIdQuery($tournamentId){
+        return Game::find()->where(['tournament_id' => $tournamentId]);
+    }
     public function getTourAndTournamentGamesQuery($tour, $tournamentId){
         return Game::find()->andWhere(['tour' => $tour])->andWhere(['tournament_id' => $tournamentId]);
     }
