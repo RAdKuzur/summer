@@ -11,22 +11,12 @@ use yii\widgets\DetailView;
 /* @var $firstDataProvider */
 /* @var $secondDataProvider */
 $this->title = $model->getSquadName($model->first_squad_id).' против '.$model->getSquadName($model->second_squad_id);
-$this->params['breadcrumbs'][] = ['label' => 'Матч', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Матчи', 'url' => ['index', 'tournamentId' => $model->tournament_id]];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="draw-view">
     <h1><?= Html::encode($this->title) ?></h1>
-    <p>
-        <?= Html::a('Редактировать', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
     <h2>Состав команды <?php echo $model->getSquadName($model->first_squad_id)?> </h2>
     <?php
     echo DetailView::widget([
@@ -68,7 +58,6 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ],
     ]);?>
-
     <h2>Состав команды <?php echo $model->getSquadName($model->second_squad_id)?></h2>
     <?php
     echo DetailView::widget([
@@ -112,6 +101,6 @@ $this->params['breadcrumbs'][] = $this->title;
     ]);
     ?>
     <div class="save-button">
-        <?= Html::a('Сохранить', Url::to(['update', 'id' => $model->id]), ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Сохранить', Url::to(['index', 'tournamentId' => $model->tournament_id]), ['class' => 'btn btn-primary']) ?>
     </div>
 </div>

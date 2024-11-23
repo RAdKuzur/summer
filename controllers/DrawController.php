@@ -53,22 +53,25 @@ class DrawController extends Controller
     public function actionCreate($tournamentId, $tour){
         /* @var $tournament Tournament */
         $tournament = $this->tournamentRepository->getById($tournamentId);
+        $this->drawService->checkWinners($tournamentId, $tour);
         if($tour == 1) {
             $squadList = $this->drawService->createSquadList($tournamentId);
         }
         else {
-            $this->drawService->checkWinners($tournamentId, $tour);
             $squadList = $this->drawService->createNewSquadList($tournamentId, $tour);
         }
-        if (!DrawHelper::isPowerOfTwo(count($squadList)) && count($squadList) != 0) {
-            var_dump('Ошибка, колво команд не равно 2^n');
+        if(!$this->gameRepository->getZeroStatuses($tour - 1, $tournamentId) || $tour == 1) {
+            if (!DrawHelper::isPowerOfTwo(count($squadList)) && count($squadList) != 0) {
+                var_dump('Ошибка, колво команд не равно 2^n');
+            }
+            $squads = $this->drawService->createGames($squadList, $tour, $tournamentId);
         }
-        $squads = $this->drawService->createGames($squadList, $tour, $tournamentId);
         return $this->redirect(['index',
             'tournamentId' => $tournament->id,
         ]);
     }
     public function actionUpdate($id){
+        //
         var_dump($id);
     }
     public function actionView($id){
@@ -77,8 +80,8 @@ class DrawController extends Controller
         $secondSquad = $this->squadRepository->getById($model->second_squad_id);
         $firstSquadStudent = $this->squadStudentRepository->getBySquadIdQuery($firstSquad->id);
         $secondSquadStudent = $this->squadStudentRepository->getBySquadIdQuery($secondSquad->id);
-        $firstDataProvider = new ActiveDataProvider([ 'query' => $firstSquadStudent]);
-        $secondDataProvider = new ActiveDataProvider(['query' =>$secondSquadStudent]);
+        $firstDataProvider = new ActiveDataProvider(['query' => $firstSquadStudent]);
+        $secondDataProvider = new ActiveDataProvider(['query' => $secondSquadStudent]);
         return $this->render('view', [
             'model' => $model,
             'firstDataProvider' => $firstDataProvider,
@@ -92,5 +95,19 @@ class DrawController extends Controller
     public function actionMinusScore($id, $score, $gameId){
         $this->squadStudentGameRepository->changeScore($id, -$score);
         $this->redirect(['view', 'id' => $gameId]);
+    }
+    public function actionDeleteDrawTournament($tournamentId){
+        $tournament = $this->tournamentRepository->getById($tournamentId);
+        $tournament->current_tour = 0;
+        $games = $this->gameRepository->getByTournamentId($tournamentId);
+        foreach ($games as $game) {
+            $squadStudentGames = $this->squadStudentGameRepository->getByGameId($game->id);
+            foreach ($squadStudentGames as $squadStudentGame) {
+                $squadStudentGame->delete();
+            }
+            $game->delete();
+        }
+        $tournament->save();
+        return $this->redirect(['index', 'tournamentId' => $tournamentId]);
     }
 }

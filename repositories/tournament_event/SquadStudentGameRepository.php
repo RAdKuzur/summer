@@ -44,14 +44,11 @@ class SquadStudentGameRepository
         }
     }
     public function getByGameId($gameId){
-        return SquadStudentGame::find()->where(["game_id" => $gameId]);
+        return SquadStudentGame::find()->where(["game_id" => $gameId])->all();
     }
     public function changeScore($id, $score){
         $model = SquadStudentGame::findOne($id);
         $model->score = $model->score + $score;
         $model->save();
     }
-    public function getTourScore($tour , $tournamentId){
-    }
-
 }

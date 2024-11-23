@@ -7,7 +7,7 @@ use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\widgets\DetailView;
+use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $tournament \app\models\tournament_event\Tournament */
@@ -16,11 +16,27 @@ use yii\widgets\DetailView;
 $this->title = 'Жеребьёвка турнира '.$tournament->name;
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<?php
+$script = <<< JS
+$(document).ready(function() {
+    setInterval(function(){ $("#refreshButton").click(); }, 300);
+});
+JS;
+$this->registerJs($script);
+?>
 <div class="draw-index">
     <h1><?= Html::encode($this->title) ?></h1>
     <h2>
-        Таблица матчей
+        Таблица матчей. <?php
+        if ($tournament->current_tour != 0) {
+            echo 'Тур ' . $tournament->current_tour;
+        }
+        ?>
     </h2>
+
+    <?php Pjax::begin(); ?>
+    <?= Html::a("Refresh", ['index', 'tournamentId' => $tournament->id], ['class' => 'hidden', 'id' => 'refreshButton']) ?>
+    <br>
     <?php
         if($games != NULL) {
             echo GridView::widget([
@@ -65,9 +81,12 @@ $this->params['breadcrumbs'][] = $this->title;
             </p>
         <?php
         }
-
     ?>
+    <?php Pjax::end(); ?>
     <?=  Html::a("Провести жеребьёвку тура № ".($tournament->current_tour + 1),
         Url::to(['create', 'tournamentId' => $tournament->id, 'tour' => $tournament->current_tour + 1]),
         ['class' => 'btn btn-success']); ?>
+    <?=  Html::a("Сбросить жеребьевку" ,
+        Url::to(['delete-draw-tournament', 'tournamentId' => $tournament->id]),
+        ['class' => 'btn btn-danger']); ?>
 </div>
