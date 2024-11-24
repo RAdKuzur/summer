@@ -46,6 +46,10 @@ class SquadStudentGameRepository
     public function getByGameId($gameId){
         return SquadStudentGame::find()->where(["game_id" => $gameId])->all();
     }
+    public function getBySquadStudentId($squadStudentId){
+        return SquadStudentGame::find()->where(["squad_student_id" => $squadStudentId])->all();
+    }
+
     public function changeScore($id, $score){
         $model = SquadStudentGame::findOne($id);
         $model->score = $model->score + $score;

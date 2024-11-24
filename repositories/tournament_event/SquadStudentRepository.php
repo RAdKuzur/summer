@@ -10,6 +10,9 @@ class SquadStudentRepository
     public function getById(int $id){
         return SquadStudent::findOne($id);
     }
+    public function getByStudentId(int $studentId){
+        return SquadStudent::find()->where(['student_id' => $studentId])->all();
+    }
     public function getBySquadId(int $squadId){
         return SquadStudent::find()->where(['squad_id' => $squadId])->all();
     }

@@ -4,6 +4,8 @@ namespace app\controllers;
 
 use app\models\tournament_event\Student;
 use app\repositories\tournament_event\SchoolRepository;
+use app\repositories\tournament_event\SquadStudentGameRepository;
+use app\repositories\tournament_event\SquadStudentRepository;
 use app\repositories\tournament_event\StudentRepository;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -13,15 +15,21 @@ class StudentController extends Controller
 {
     public StudentRepository $studentRepository;
     public SchoolRepository $schoolRepository;
+    public SquadStudentRepository $squadStudentRepository;
+    public SquadStudentGameRepository $squadStudentGameRepository;
     public function __construct(
         $id,
         $module,
         StudentRepository $studentRepository,
         SchoolRepository $schoolRepository,
+        SquadStudentRepository $squadStudentRepository,
+        SquadStudentGameRepository $squadStudentGameRepository,
         $config = [])
     {
         $this->studentRepository = $studentRepository;
         $this->schoolRepository = $schoolRepository;
+        $this->squadStudentRepository = $squadStudentRepository;
+        $this->squadStudentGameRepository = $squadStudentGameRepository;
         parent::__construct($id, $module, $config);
     }
     public function actionIndex(){
@@ -64,7 +72,16 @@ class StudentController extends Controller
         ]);
     }
     public function actionDelete($id){
-        $this->studentRepository->getById($id)->delete();
+        $student = $this->studentRepository->getById($id);
+        $squadStudents = $this->squadStudentRepository->getByStudentId($student->id);
+        foreach ($squadStudents as $squadStudent){
+            $squadStudentGame = $this->squadStudentGameRepository->getBySquadStudentId($squadStudent->id);
+            foreach ($squadStudentGame as $item){
+                $item->delete();
+            }
+            $squadStudent->delete();
+        }
+        $student->delete();
         return $this->redirect(['index']);
     }
 }

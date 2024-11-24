@@ -14,6 +14,7 @@ use yii\widgets\Pjax;
 /* @var $games \app\models\tournament_event\Game */
 /* @var $dataProvider ActiveDataProvider*/
 $this->title = 'Жеребьёвка турнира '.$tournament->name;
+$this->params['breadcrumbs'][] = ['label' => 'Турнир '.$tournament->name, 'url' => ['tournament/view', 'id' => $tournament->id]];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?php
@@ -71,7 +72,14 @@ $this->registerJs($script);
                             return $firstScore.' : '.$secondScore;
                         },
                     ],
-                    ['class' => 'yii\grid\ActionColumn'],
+                    [
+                        'class' => 'yii\grid\DataColumn',
+                        'label' => 'Действия', // Заголовок столбца
+                        'format' => 'raw', // Чтобы использовать HTML
+                        'value' => function ($model) {
+                            return Html::a('Просмотр', Url::to(['view', 'id' => $model->id]), ['class' => 'btn btn-primary']);
+                        },
+                    ],
                 ],
             ]);
         }

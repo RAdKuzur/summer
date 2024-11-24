@@ -29,7 +29,8 @@ use yii\widgets\ActiveForm;
                     'format' => 'raw', // Чтобы использовать HTML
                     'value' => function ($model) {
                         return Html::a('Внести изменения', Url::to(['student/update', 'id' => $model->student_id]), ['class' => 'btn btn-success']) . ' ' .
-                            Html::a('Просмотр', Url::to(['student/view', 'id' => $model->student_id]), ['class' => 'btn btn-warning']);
+                            Html::a('Просмотр', Url::to(['student/view', 'id' => $model->student_id]), ['class' => 'btn btn-warning']). ' ' .
+                            Html::a('Удалить', Url::to(['delete-student', 'squadId' => $model->id]), ['class' => 'btn btn-danger']);
                     },
                 ],
             ],

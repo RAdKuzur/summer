@@ -32,9 +32,9 @@ use yii\widgets\ActiveForm;
                     'format' => 'raw', // Чтобы использовать HTML
                     'value' => function ($model) {
                         global $modelId;
-                        return Html::a('Внести изменения', Url::to(['update-squad-from-form', 'id' => $model->id]), ['class' => 'btn btn-success']) . ' ' .
-                            Html::a('Просмотр', Url::to(['view-squad-from-form', 'id' => $model->id]), ['class' => 'btn btn-warning']) . ' ' .
-                            Html::a('Удалить', Url::to(['delete-squad-from-form', 'id' => $model->id]), ['class' => 'btn btn-danger']);
+                        return Html::a('Внести изменения', Url::to(['squad/update', 'id' => $model->id]), ['class' => 'btn btn-success']) . ' ' .
+                            Html::a('Просмотр', Url::to(['squad/view', 'id' => $model->id]), ['class' => 'btn btn-warning']) . ' ' .
+                            Html::a('Удалить', Url::to(['squad/delete', 'id' => $model->id]), ['class' => 'btn btn-danger']);
                     },
                 ],
             ],

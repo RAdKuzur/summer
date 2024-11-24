@@ -64,7 +64,9 @@ class DrawController extends Controller
             if (!DrawHelper::isPowerOfTwo(count($squadList)) && count($squadList) != 0) {
                 var_dump('Ошибка, колво команд не равно 2^n');
             }
-            $squads = $this->drawService->createGames($squadList, $tour, $tournamentId);
+            if(count($squadList) != 0) {
+                $squads = $this->drawService->createGames($squadList, $tour, $tournamentId);
+            }
         }
         return $this->redirect(['index',
             'tournamentId' => $tournament->id,

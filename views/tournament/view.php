@@ -51,7 +51,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     global $modelId;
                     return Html::a('Внести изменения', Url::to(['squad/update', 'id' => $model->id]), ['class' => 'btn btn-success']) . ' ' .
                         Html::a('Просмотр', Url::to(['squad/view', 'id' => $model->id]), ['class' => 'btn btn-warning']) . ' ' .
-                        Html::a('Удалить', Url::to(['delete-squad', 'id' => $model->id]), ['class' => 'btn btn-danger']);                },
+                        Html::a('Удалить', Url::to(['squad/delete', 'id' => $model->id]), ['class' => 'btn btn-danger']);                },
             ],
         ],
     ]);
