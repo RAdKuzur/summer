@@ -21,17 +21,20 @@ class DrawService
     public GameRepository $gameRepository;
     public SquadStudentGameRepository $squadStudentGameRepository;
     public StudentRepository $studentRepository;
+    public SquadStudentRepository $squadStudentRepository;
     public function __construct(
         SquadRepository $squadRepository,
         GameRepository $gameRepository,
         SquadStudentGameRepository $squadStudentGameRepository,
-        StudentRepository $studentRepository
+        StudentRepository $studentRepository,
+        SquadStudentRepository $squadStudentRepository
     )
     {
         $this->squadRepository = $squadRepository;
         $this->gameRepository = $gameRepository;
         $this->squadStudentGameRepository = $squadStudentGameRepository;
         $this->studentRepository = $studentRepository;
+        $this->squadStudentRepository = $squadStudentRepository;
     }
     public function createSquadList($tournamentId){
         /* @var $squad Squad */
@@ -51,20 +54,14 @@ class DrawService
         foreach ($games as $game){
             $firstScore = 0;
             $secondScore = 0;
-            $firstSquad = SquadStudent::find()->where(['squad_id' => $game->first_squad_id])->all();
-            $secondSquad = SquadStudent::find()->where(['squad_id' => $game->second_squad_id])->all();
+            $firstSquad = $this->squadStudentRepository->getBySquadId($game->first_squad_id);
+            $secondSquad = $this->squadStudentRepository->getBySquadId($game->second_squad_id);
             foreach ($firstSquad as $squad) {
-                $squadStudentGame = SquadStudentGame::find()
-                    ->andWhere(['squad_student_id' => $squad->id])
-                    ->andWhere(['game_id' => $game->id])
-                    ->one();
+                $squadStudentGame = $this->squadStudentGameRepository->getByStudentAndGame($squad->id, $game->id);
                 $firstScore += $squadStudentGame->score;
             }
             foreach ($secondSquad as $squad) {
-                $squadStudentGame = SquadStudentGame::find()
-                    ->andWhere(['squad_student_id' => $squad->id])
-                    ->andWhere(['game_id' => $game->id])
-                    ->one();
+                $squadStudentGame = $this->squadStudentGameRepository->getByStudentAndGame($squad->id, $game->id);
                 $secondScore += $squadStudentGame->score;
             }
             if($secondScore > $firstScore){
@@ -84,20 +81,14 @@ class DrawService
         foreach ($games as $game){
             $firstScore = 0;
             $secondScore = 0;
-            $firstSquad = SquadStudent::find()->where(['squad_id' => $game->first_squad_id])->all();
-            $secondSquad = SquadStudent::find()->where(['squad_id' => $game->second_squad_id])->all();
+            $firstSquad = $this->squadStudentRepository->getBySquadId($game->first_squad_id);
+            $secondSquad = $this->squadStudentRepository->getBySquadId($game->second_squad_id);
             foreach ($firstSquad as $squad) {
-                $squadStudentGame = SquadStudentGame::find()
-                    ->andWhere(['squad_student_id' => $squad->id])
-                    ->andWhere(['game_id' => $game->id])
-                    ->one();
+                $squadStudentGame = $this->squadStudentGameRepository->getByStudentAndGame($squad->id, $game->id);
                 $firstScore += $squadStudentGame->score;
             }
             foreach ($secondSquad as $squad) {
-                $squadStudentGame = SquadStudentGame::find()
-                    ->andWhere(['squad_student_id' => $squad->id])
-                    ->andWhere(['game_id' => $game->id])
-                    ->one();
+                $squadStudentGame = $this->squadStudentGameRepository->getByStudentAndGame($squad->id, $game->id);
                 $secondScore += $squadStudentGame->score;
             }
             if ($firstScore > $secondScore) {

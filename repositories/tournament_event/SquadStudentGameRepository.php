@@ -55,4 +55,10 @@ class SquadStudentGameRepository
         $model->score = $model->score + $score;
         $model->save();
     }
+    public function getByStudentAndGame($id, $gameId){
+        return SquadStudentGame::find()
+            ->andWhere(['squad_student_id' => $id])
+            ->andWhere(['game_id' => $gameId])
+            ->one();
+    }
 }
