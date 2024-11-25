@@ -14,6 +14,7 @@ use app\repositories\tournament_event\SquadStudentGameRepository;
 use app\repositories\tournament_event\SquadStudentRepository;
 use app\repositories\tournament_event\StudentRepository;
 use app\repositories\tournament_event\TournamentRepository;
+use Couchbase\ValueRecorder;
 
 class DrawService
 {
@@ -121,6 +122,58 @@ class DrawService
         $this->gameRepository->updateTour($tour, $tournamentId);
         return $games;
     }
+    public function createSwissGames($teamList, $tour, $tournamentId){
+        /* @var $game Game */
+        $twoSquads = DrawHelper::splitArray($teamList);
+        $firstSquad = $twoSquads[0];
+        $secondSquad = $twoSquads[1];
+        for($i = 0; $i < count($firstSquad); $i++){
+            $data = [
+                'firstSquadId' => $firstSquad[$i][0]['id'],
+                'secondSquadId' => $firstSquad[$i][1]['id'],
+                'tournamentId' => $tournamentId,
+                'tour' => $tour,
+                'status' => 0,
+            ];
+            $this->gameRepository->createGame($data);
+            $game = $this->gameRepository->getUnigueGame($firstSquad[$i][0]['id'], $firstSquad[$i][1]['id'], $tournamentId, $tour);
+            $this->squadStudentGameRepository->createSquadStudentGames($firstSquad[$i][0]['id'], $firstSquad[$i][1]['id'], $game->id);
+        }
+        for($i = 0; $i < count($secondSquad); $i++){
+            $data = [
+                'firstSquadId' => $secondSquad[$i][0]['id'],
+                'secondSquadId' => $secondSquad[$i][1]['id'],
+                'tournamentId' => $tournamentId,
+                'tour' => $tour,
+                'status' => 0,
+            ];
+            $this->gameRepository->createGame($data);
+            $game = $this->gameRepository->getUnigueGame($secondSquad[$i][0]['id'], $secondSquad[$i][1]['id'], $tournamentId, $tour);
+            $this->squadStudentGameRepository->createSquadStudentGames($secondSquad[$i][0]['id'], $secondSquad[$i][1]['id'], $game->id);
+        }
+        $games = $this->gameRepository->getTourAndTournamentGames($tour, $tournamentId);
+        $this->gameRepository->updateTour($tour, $tournamentId);
+        return $games;
+    }
+    public function createFinalGame($teamList, $tour, $tournamentId){
+        /* @var $game Game */
+        $twoSquads = DrawHelper::splitArray($teamList);
+        $firstSquad = $twoSquads[0];
+        $secondSquad = $twoSquads[1];
+        $data = [
+            'firstSquadId' => $firstSquad[0][0]['id'],
+            'secondSquadId' => $firstSquad[0][1]['id'],
+            'tournamentId' => $tournamentId,
+            'tour' => $tour,
+            'status' => 0,
+        ];
+        $this->gameRepository->createGame($data);
+        $game = $this->gameRepository->getUnigueGame($firstSquad[0][0]['id'], $firstSquad[0][1]['id'], $tournamentId, $tour);
+        $this->squadStudentGameRepository->createSquadStudentGames($firstSquad[0][0]['id'], $firstSquad[0][1]['id'], $game->id);
+        $games = $this->gameRepository->getTourAndTournamentGames($tour, $tournamentId);
+        $this->gameRepository->updateTour($tour, $tournamentId);
+        return $games;
+    }
     public function createStudentLists($firstSquadStudent, $secondSquadStudent)
     {
         $firstStudents = [];
@@ -136,5 +189,65 @@ class DrawService
             $firstStudents,
             $secondStudents
         ];
+    }
+    public function isPlayed($firstSquadId, $secondSquadId, $tournamentId)
+    {
+        $this->gameRepository->getByTournamentAndSquadsId($firstSquadId, $secondSquadId, $tournamentId, );
+        if( $this->gameRepository->getByTournamentAndSquadsId($firstSquadId, $secondSquadId, $tournamentId) ||
+            $this->gameRepository->getByTournamentAndSquadsId( $secondSquadId,$firstSquadId, $tournamentId)){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    public function createPairs($teams, $tournamentId) {
+        $teams = $this->sortTeams($teams);
+        $pairs = [];
+        $count = count($teams);
+        $usedTeams = [];
+        for ($i = 0; $i < $count; $i++) {
+            if (in_array($teams[$i]['id'], $usedTeams)) {
+                continue; // Пропускаем уже использованные команды
+            }
+            for ($j = $i + 1; $j < $count; $j++) {
+                if (!in_array($teams[$j]['id'], $usedTeams) && !$this->isPlayed($teams[$i]['id'], $teams[$j]['id'], $tournamentId)) {
+                    $pairs[] = [$teams[$i], $teams[$j]];
+                    $usedTeams[] = $teams[$i]['id'];
+                    $usedTeams[] = $teams[$j]['id'];
+                    break;
+                }
+            }
+        }
+        return $pairs;
+    }
+    public function createSwissSquad($squads)
+    {
+        /* @var $squad Squad */
+        $array = [];
+        foreach($squads as $squad){
+            $wins = $this->gameRepository->amountSquadWins($squad->id, $squad->tournament_id);
+            $array[] = ['id' => $squad->id, 'total_score' => $squad->total_score, 'score' => $squad->getPoints(), 'wins' => $wins];
+        }
+        return $array;
+    }
+    public function sortTeams($teams) {
+        usort($teams, function($a, $b) {
+            // Сравниваем по 'wins'
+            $winComparison = $b['wins'] <=> $a['wins'];
+            if ($winComparison !== 0) {
+                return $winComparison; // Если не равны, возвращаем результат сравнения по 'wins'
+            }
+
+            // Если 'wins' равны, сравниваем по 'score'
+            $scoreComparison = $b['score'] <=> $a['score'];
+            if ($scoreComparison !== 0) {
+                return $scoreComparison; // Если не равны, возвращаем результат сравнения по 'score'
+            }
+
+            // Если 'score' тоже равны, сравниваем по 'total_score'
+            return $b['total_score'] <=> $a['total_score'];
+        });
+        return $teams;
     }
 }

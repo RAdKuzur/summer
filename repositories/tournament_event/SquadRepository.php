@@ -22,6 +22,9 @@ class SquadRepository
     public function getByTournamentId($tournamentId){
         return Squad::find()->where(['tournament_id' => $tournamentId])->all();
     }
+    public function getByTournamentIdQuery($tournamentId){
+        return Squad::find()->where(['tournament_id' => $tournamentId]);
+    }
     public function fill($data, $tournament_id){
         /* @var $squad Squad */
         $squad = Squad::fill($data["name"], 0, $tournament_id, $data["school_id"]);
@@ -30,12 +33,6 @@ class SquadRepository
         $command->insert($squad::tableName(), $squad->getAttributes());
         $command->execute();
     }
-    /*public function searchSquad($queryParams)
-    {
-        $searchModel = Yii::createObject(\app\models\tournament_event\search\SearchSquad::class);
-        $dataProvider = $searchModel->search($queryParams);
-        return [$searchModel,  $dataProvider];
-    }*/
     public function searchSquadWithoutId($queryParams)
     {
         $searchModel = Yii::createObject(\app\models\tournament_event\search\SearchSquad::class);
@@ -50,5 +47,27 @@ class SquadRepository
             $score += $student->olymp_score;
         }
         return $score;
+    }
+    public function getTournamentScore($squadId)
+    {
+        $squadStudentRepository = new SquadStudentRepository();
+        $gameRepository = new GameRepository($this);
+        $squadStudentGameRepository = new SquadStudentGameRepository($squadStudentRepository,$this, $gameRepository);
+        $squadScore = 0;
+        $squadStudents = $squadStudentRepository->getBySquadId($squadId);
+        foreach ($squadStudents as $squadStudent) {
+            $squadStudentGames =$squadStudentGameRepository->getBySquadStudentId($squadStudent->id);
+            $studentScore = 0;
+            foreach ($squadStudentGames as $squadStudentGame) {
+                $studentScore = $studentScore + $squadStudentGame->score;
+            }
+            $squadScore = $squadScore + $studentScore;
+        }
+        return $squadScore;
+    }
+    public function getWins($squadId, $tournamentId)
+    {
+        $gameRepository = new GameRepository($this);
+        return $gameRepository->amountSquadWins($squadId, $tournamentId);
     }
 }

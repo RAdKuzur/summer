@@ -56,7 +56,8 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]);
     ?>
-    <?= Html::a('Добавить жеребьёвку', ['draw/index', 'tournamentId' => $model->id], ['class' => 'btn btn-success']) ?>
+    <?= Html::a('Перейти к жеребьёвке', ['draw/index', 'tournamentId' => $model->id], ['class' => 'btn btn-success']) ?>
     <?= Html::a('Перейти к матчам', ['view-game', 'tournamentId' => $model->id], ['class' => 'btn btn-primary']) ?>
+    <?= Html::a('Перейти к таблице лидеров', ['leaderboard/index', 'tournamentId' => $model->id], ['class' => 'btn btn-warning']) ?>
 
 </div>

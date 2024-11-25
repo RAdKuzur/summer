@@ -39,6 +39,14 @@ class GameRepository
             ->andWhere(['second_squad_id' => $secondSquadId])
             ->one();
     }
+    public function getByTournamentAndSquadsId($firstSquadId, $secondSquadId, $tournamentId)
+    {
+        return Game::find()
+            ->andWhere(['tournament_id' => $tournamentId])
+            ->andWhere(['first_squad_id' => $firstSquadId])
+            ->andWhere(['second_squad_id' => $secondSquadId])
+            ->one();
+    }
     public function getZeroStatuses($tour, $tournamentId)
     {
         return Game::find()
@@ -79,4 +87,19 @@ class GameRepository
         }
         return $winners;
     }
+    public function amountSquadWins($squadId, $tournamentId)
+    {
+        $firstWins = Game::find()
+            ->andWhere(['first_squad_id' => $squadId])
+            ->andWhere(['tournament_id' => $tournamentId])
+            ->andWhere(['status' => 1])
+            ->all();
+        $secondWins = Game::find()
+            ->andWhere(['first_squad_id' => $squadId])
+            ->andWhere(['tournament_id' => $tournamentId])
+            ->andWhere(['status' => 2])
+            ->all();
+        return count($firstWins) + count($secondWins);
+    }
+
 }

@@ -2,6 +2,7 @@
 
 namespace app\models\tournament_event;
 
+use app\repositories\tournament_event\GameRepository;
 use app\repositories\tournament_event\SquadRepository;
 use Yii;
 use yii\db\ActiveRecord;
@@ -52,7 +53,9 @@ class Squad extends ActiveRecord
             'school_id' => 'School ID',
             'school' => 'Название школы',
             'tournament' => 'Турнир',
-            'score' => 'Стартовые баллы'
+            'score' => 'Стартовые баллы',
+            'points' => 'Очки',
+            'wins' => 'Победы'
         ];
     }
 
@@ -80,5 +83,13 @@ class Squad extends ActiveRecord
     {
         $repository = new SquadRepository();
         return $repository->getScore($this);
+    }
+    public function getPoints(){
+        $repository = new SquadRepository();
+        return $repository->getTournamentScore($this->id) + $this->total_score;
+    }
+    public function getWins(){
+        $repository = new SquadRepository();
+        return $repository->getWins($this->id, $this->tournament_id);
     }
 }

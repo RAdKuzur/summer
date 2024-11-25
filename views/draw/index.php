@@ -77,7 +77,7 @@ $this->registerJs($script);
                         'label' => 'Действия', // Заголовок столбца
                         'format' => 'raw', // Чтобы использовать HTML
                         'value' => function ($model) {
-                            return Html::a('Просмотр', Url::to(['view', 'id' => $model->id]), ['class' => 'btn btn-primary']);
+                            return Html::a('Перейти к выставлению баллов', Url::to(['view', 'id' => $model->id]), ['class' => 'btn btn-primary']);
                         },
                     ],
                 ],

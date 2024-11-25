@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\helpers\DrawHelper;
 
+use app\models\tournament_event\Squad;
 use app\models\tournament_event\Tournament;
 use app\repositories\tournament_event\GameRepository;
 use app\repositories\tournament_event\SquadRepository;
@@ -53,6 +54,7 @@ class DrawController extends Controller
     public function actionCreate($tournamentId, $tour){
         /* @var $tournament Tournament */
         $tournament = $this->tournamentRepository->getById($tournamentId);
+        /* play-off system
         $this->drawService->checkWinners($tournamentId, $tour);
         if($tour == 1) {
             $squadList = $this->drawService->createSquadList($tournamentId);
@@ -67,10 +69,62 @@ class DrawController extends Controller
             if(count($squadList) != 0) {
                 $squads = $this->drawService->createGames($squadList, $tour, $tournamentId);
             }
+        }*/
+        // swiss system
+        /* @var $squad Squad */
+        $squads = $this->squadRepository->getByTournamentId($tournamentId);
+        $this->drawService->checkWinners($tournamentId, $tour);
+        if($tour == 1) {
+            foreach ($squads as $squad) {
+                $squad->total_score = $squad->getScore();
+                $squad->save();
+            }
+            $squadList = $this->drawService->createSwissSquad($squads);
+        }
+        else {
+            foreach ($squads as $squad) {
+                $squad->total_score = $squad->getPoints();
+                $squad->save();
+            }
+            $squadList = $this->drawService->createSwissSquad($squads);
+        }
+        $squadList = $this->drawService->createPairs($squadList, $tournamentId);
+        if(2 ** $tour < count($squads)) {
+            if (!$this->gameRepository->getZeroStatuses($tour - 1, $tournamentId) || $tour == 1) {
+                if (!DrawHelper::isPowerOfTwo(count($squadList)) && count($squadList) != 0) {
+                    var_dump('Ошибка, колво команд не равно 2^n');
+                }
+                if (count($squadList) != 0) {
+                    $squads = $this->drawService->createSwissGames($squadList, $tour, $tournamentId);
+                }
+            }
+        }
+        else if (2 ** $tour == count($squads)) {
+            if (!$this->gameRepository->getZeroStatuses($tour - 1, $tournamentId) || $tour == 1) {
+                if (!DrawHelper::isPowerOfTwo(count($squadList)) && count($squadList) != 0) {
+                    var_dump('Ошибка, колво команд не равно 2^n');
+                }
+                if (count($squadList) != 0) {
+                    $squads = $this->drawService->createFinalGame($squadList, $tour, $tournamentId);
+                }
+            }
+        }
+        else if (2 ** $tour > count($squads)) {
+            if (!$this->gameRepository->getZeroStatuses($tour - 1, $tournamentId) || $tour == 1) {
+                if (!DrawHelper::isPowerOfTwo(count($squadList)) && count($squadList) != 0) {
+                    var_dump('Ошибка, колво команд не равно 2^n');
+                }
+                if (count($squadList) != 0) {
+                    return $this->redirect(['champ']);
+                }
+            }
         }
         return $this->redirect(['index',
             'tournamentId' => $tournament->id,
         ]);
+    }
+    public function actionChamp(){
+        return $this->render('champ');
     }
     public function actionUpdate($id){
         //
