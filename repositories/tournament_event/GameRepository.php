@@ -101,5 +101,18 @@ class GameRepository
             ->all();
         return count($firstWins) + count($secondWins);
     }
-
+    public function amountSquadLose($squadId, $tournamentId)
+    {
+        $firstLose = Game::find()
+            ->andWhere(['first_squad_id' => $squadId])
+            ->andWhere(['tournament_id' => $tournamentId])
+            ->andWhere(['status' => 2])
+            ->all();
+        $secondLose = Game::find()
+            ->andWhere(['second_squad_id' => $squadId])
+            ->andWhere(['tournament_id' => $tournamentId])
+            ->andWhere(['status' => 1])
+            ->all();
+        return count($firstLose) + count($secondLose);
+    }
 }

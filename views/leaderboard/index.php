@@ -47,7 +47,9 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 $script = <<< JS
 $(document).ready(function() {
-    setInterval(function(){ $("#refreshButton").click(); }, 3000);
+    setInterval(function(){ 
+        $.pjax.reload({container: '#pjax-container', timeout: 2000});
+    }, 3000);
 });
 JS;
 $this->registerJs($script);
@@ -55,7 +57,7 @@ $this->registerJs($script);
 <body background="back2.png" style="background-size: 100% 100%;">
 <div class="leaderboard-index">
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php Pjax::begin(); ?>
+    <?php Pjax::begin(['id' => 'pjax-container']); ?>
     <?= Html::a("Refresh", ['index', 'tournamentId' => $tournament->id], ['class' => 'hidden', 'id' => 'refreshButton']) ?>
     <br>
     <?php
@@ -66,10 +68,16 @@ $this->registerJs($script);
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
                     'name',
-                    'win',
-                    'lose',
+                    [
+                        'attribute' => 'win',
+                        'label' => 'Результаты', // Название объединенного столбца
+                        'value' => function ($model) {
+                            return $model->getWins() . '-' . $model->getLoses();
+                        },
+                        'format' => 'raw', // Разрешает форматирование HTML
+                    ],
                     'points',
-                ],
+                ]
             ]);
         }
         else { ?>

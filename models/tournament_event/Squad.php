@@ -95,8 +95,8 @@ class Squad extends ActiveRecord
         $repository = new SquadRepository();
         return $repository->getWins($this->id, $this->tournament_id);
     }
-    public function getLose(){
-        $tournament = Tournament::find()->where(['id' => $this->tournament_id])->one();
-        return $tournament->current_tour - $this->win;
+    public function getLoses(){
+        $repository = new SquadRepository();
+        return $repository->getLoses($this->id, $this->tournament_id);
     }
 }

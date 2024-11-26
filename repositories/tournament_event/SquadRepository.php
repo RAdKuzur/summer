@@ -74,6 +74,12 @@ class SquadRepository
         $gameRepository = new GameRepository($this);
         return $gameRepository->amountSquadWins($squadId, $tournamentId);
     }
+    public function getLoses($squadId, $tournamentId)
+    {
+        /* @var $squad Squad */
+        $gameRepository = new GameRepository($this);
+        return $gameRepository->amountSquadLose($squadId, $tournamentId);
+    }
     public function setWins(Squad $squad)
     {
         $squad->win = $squad->getWins();
