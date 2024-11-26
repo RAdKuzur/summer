@@ -8,7 +8,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model \app\models\tournament_event\School */
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Турниры', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Школы', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>

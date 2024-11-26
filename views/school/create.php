@@ -4,7 +4,7 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model \app\models\tournament_event\School */
 
-$this->title = 'Добавить турнир';
+$this->title = 'Добавить школу';
 $this->params['breadcrumbs'][] = ['label' => 'Школы', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

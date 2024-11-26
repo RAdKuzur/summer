@@ -8,10 +8,9 @@ use yii\helpers\Html;
 /* @var $modelSquads */
 /* @var $schools */
 /* @var $dataProvider */
-$this->title = 'Редактировать турнир: ' . $model->name;
+$this->title = 'Редактировать школу: ' . $model->name;
 $this->params['breadcrumbs'][] = ['label' => 'Школы', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Update';
 ?>
     <div class="school-update">
 

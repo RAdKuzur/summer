@@ -15,6 +15,11 @@ $this->params['breadcrumbs'][] = ['label' => 'Матчи', 'url' => ['index', 't
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
+<style>
+    .button-margin {
+        margin: 5px;
+    }
+</style>
 <div class="draw-view">
     <h1><?= Html::encode($this->title) ?></h1>
     <h2>Состав команды <?php echo $model->getSquadName($model->first_squad_id)?> </h2>
@@ -30,7 +35,10 @@ $this->params['breadcrumbs'][] = $this->title;
         //'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-            'student',
+            [
+                'attribute' => 'student',
+                'header' => 'ФИО участника', // Название столбца
+            ],
             [
                 'class' => 'yii\grid\DataColumn',
                 'label' => 'Очки',
@@ -52,12 +60,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         ->andWhere(['game_id' => $model->id])
                         ->one();
                     return
-                        Html::a('+1', Url::to(['plus-score', 'id' => $item->id, 'score' => 1, 'gameId' => $model->id]), ['class' => 'btn btn-success']) . ' ' .
-                        Html::a('+2', Url::to(['plus-score', 'id' => $item->id, 'score' => 2, 'gameId' => $model->id]), ['class' => 'btn btn-success']) . ' ' .
-                        Html::a('+3', Url::to(['plus-score', 'id' => $item->id, 'score' => 3, 'gameId' => $model->id]), ['class' => 'btn btn-success']) . ' ' .
-                        Html::a('-1', Url::to(['minus-score', 'id' => $item->id, 'score' => 1, 'gameId' => $model->id]), ['class' => 'btn btn-danger']) . ' ' .
-                        Html::a('-2', Url::to(['minus-score', 'id' => $item->id, 'score' => 2, 'gameId' => $model->id]), ['class' => 'btn btn-danger']) . ' ' .
-                        Html::a('-3', Url::to(['minus-score', 'id' => $item->id, 'score' => 3, 'gameId' => $model->id]), ['class' => 'btn btn-danger']) . ' ';
+                        Html::a('+1', Url::to(['plus-score', 'id' => $item->id, 'score' => 1, 'gameId' => $model->id]), ['class' => 'btn btn-success button-margin']) . ' ' .
+                        Html::a('+2', Url::to(['plus-score', 'id' => $item->id, 'score' => 2, 'gameId' => $model->id]), ['class' => 'btn btn-success button-margin']) . ' ' .
+                        Html::a('+3', Url::to(['plus-score', 'id' => $item->id, 'score' => 3, 'gameId' => $model->id]), ['class' => 'btn btn-success button-margin']) . ' ' .
+                        Html::a('-1', Url::to(['minus-score', 'id' => $item->id, 'score' => 1, 'gameId' => $model->id]), ['class' => 'btn btn-danger button-margin']) . ' ' .
+                        Html::a('-2', Url::to(['minus-score', 'id' => $item->id, 'score' => 2, 'gameId' => $model->id]), ['class' => 'btn btn-danger button-margin']) . ' ' .
+                        Html::a('-3', Url::to(['minus-score', 'id' => $item->id, 'score' => 3, 'gameId' => $model->id]), ['class' => 'btn btn-danger button-margin']) . ' ';
                 },
             ],
         ],
@@ -97,12 +105,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         ->andWhere(['game_id' => $model->id])
                         ->one();
                     return
-                        Html::a('+1', Url::to(['plus-score', 'id' => $item->id, 'score' => 1, 'gameId' => $model->id]), ['class' => 'btn btn-success']) . ' ' .
-                        Html::a('+2', Url::to(['plus-score', 'id' => $item->id, 'score' => 2, 'gameId' => $model->id]), ['class' => 'btn btn-success']) . ' ' .
-                        Html::a('+3', Url::to(['plus-score', 'id' => $item->id, 'score' => 3, 'gameId' => $model->id]), ['class' => 'btn btn-success']) . ' ' .
-                        Html::a('-1', Url::to(['minus-score', 'id' => $item->id, 'score' => 1, 'gameId' => $model->id]), ['class' => 'btn btn-danger']) . ' ' .
-                        Html::a('-2', Url::to(['minus-score', 'id' => $item->id, 'score' => 2, 'gameId' => $model->id]), ['class' => 'btn btn-danger']) . ' ' .
-                        Html::a('-3', Url::to(['minus-score', 'id' => $item->id, 'score' => 3, 'gameId' => $model->id]), ['class' => 'btn btn-danger']) . ' ';
+                        Html::a('+1', Url::to(['plus-score', 'id' => $item->id, 'score' => 1, 'gameId' => $model->id]), ['class' => 'btn btn-success button-margin']) . ' ' .
+                        Html::a('+2', Url::to(['plus-score', 'id' => $item->id, 'score' => 2, 'gameId' => $model->id]), ['class' => 'btn btn-success button-margin']) . ' ' .
+                        Html::a('+3', Url::to(['plus-score', 'id' => $item->id, 'score' => 3, 'gameId' => $model->id]), ['class' => 'btn btn-success button-margin']) . ' ' .
+                        Html::a('-1', Url::to(['minus-score', 'id' => $item->id, 'score' => 1, 'gameId' => $model->id]), ['class' => 'btn btn-danger button-margin']) . ' ' .
+                        Html::a('-2', Url::to(['minus-score', 'id' => $item->id, 'score' => 2, 'gameId' => $model->id]), ['class' => 'btn btn-danger button-margin']) . ' ' .
+                        Html::a('-3', Url::to(['minus-score', 'id' => $item->id, 'score' => 3, 'gameId' => $model->id]), ['class' => 'btn btn-danger button-margin']) . ' ';
                 },
             ],
         ],
