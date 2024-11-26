@@ -15,6 +15,7 @@ use yii\db\ActiveRecord;
  * @property int $total_score
  * @property int $tournament_id
  * @property int|null $school_id
+ * @property int|null $win
  */
 class Squad extends ActiveRecord
 {
@@ -35,7 +36,7 @@ class Squad extends ActiveRecord
     {
         return [
             [['name', 'total_score', 'tournament_id'], 'required'],
-            [['total_score', 'tournament_id', 'school_id'], 'integer'],
+            [['total_score', 'tournament_id', 'school_id', 'wins'], 'integer'],
             [['name'], 'string', 'max' => 1000],
         ];
     }
@@ -55,7 +56,9 @@ class Squad extends ActiveRecord
             'tournament' => 'Турнир',
             'score' => 'Стартовые баллы',
             'points' => 'Очки',
-            'wins' => 'Победы'
+            'wins' => 'Победы',
+            'win' => 'Победы',
+            'lose' => 'Поражения'
         ];
     }
 
@@ -86,10 +89,14 @@ class Squad extends ActiveRecord
     }
     public function getPoints(){
         $repository = new SquadRepository();
-        return $repository->getTournamentScore($this->id) + $this->total_score;
+        return $repository->getTournamentScore($this->id);
     }
     public function getWins(){
         $repository = new SquadRepository();
         return $repository->getWins($this->id, $this->tournament_id);
+    }
+    public function getLose(){
+        $tournament = Tournament::find()->where(['id' => $this->tournament_id])->one();
+        return $tournament->current_tour - $this->win;
     }
 }

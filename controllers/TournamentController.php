@@ -116,21 +116,23 @@ class TournamentController extends Controller
         ]);
     }
     public function actionDelete($id){
-        $squads = $this->squadRepository->getByTournamentId($id);
-        foreach($squads as $squad){
-            $squad->delete();
-        }
         $games = $this->gameRepository->getByTournamentId($id);
         foreach ($games as $game) {
             $squadStudentGames = $this->squadStudentGameRepository->getByGameId($game->id);
             foreach ($squadStudentGames as $squadStudentGame) {
-                $squadStudent = $this->squadStudentRepository->getById($squadStudentGame->squad_student_id);
-                if($squadStudent != NULL){
-                    $squadStudent->delete();
-                }
                 $squadStudentGame->delete();
             }
             $game->delete();
+        }
+        $squads = $this->squadRepository->getByTournamentId($id);
+        foreach($squads as $squad){
+            $squadStudents = $this->squadStudentRepository->getBySquadId($squad->id);
+            foreach($squadStudents as $squadStudent){
+                if($squadStudent != NULL){
+                    $squadStudent->delete();
+                }
+            }
+            $squad->delete();
         }
         $this->tournamentRepository->getById($id)->delete();
         return $this->redirect(['index']);

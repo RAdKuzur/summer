@@ -16,6 +16,34 @@ $this->title = 'Матчи турнира '.$tournament->name;
 $this->params['breadcrumbs'][] = ['label' => 'Турнир '.$tournament->name, 'url' => ['tournament/view', 'id' => $tournament->id]];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<style>
+    .breadcrumb {
+        background-color: rgba(255, 255, 255, 0.5); /* Прозрачный белый фон */
+        padding: 10px; /* Добавьте нужные отступы */
+        border-radius: 5px; /* Скругленные углы (по желанию) */
+    }
+    .table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .table th, .table td {
+        padding: 8px;
+        text-align: left;
+        border: 1px solid #ddd;
+        font-family: Century Gothic, serif;
+    }
+    .table th {
+        background-color: orange; /* Зеленый фон для заголовка */
+        color: white; /* Белый цвет текста в заголовке */
+    }
+    .table a {
+        text-decoration: none;
+        color: white;
+    }
+    .table tr:nth-child(even) {background-color: #f2f2f2;} /* Зебра для строк */
+    .table tr:hover {background-color: #ddd;} /* Подсветка строки при наведении */
+</style>
 <?php
 $script = <<< JS
 $(document).ready(function() {
@@ -24,6 +52,7 @@ $(document).ready(function() {
 JS;
 $this->registerJs($script);
 ?>
+<body background="back2.png" style="background-size: 100% 100%;">
 <div class="leaderboard-index">
     <h1><?= Html::encode($this->title) ?></h1>
     <?php Pjax::begin(); ?>
@@ -33,9 +62,13 @@ $this->registerJs($script);
         if($squads != NULL) {
             echo GridView::widget([
                 'dataProvider' => $dataProvider,
+                'options' => ['class' => 'table table-striped table-bordered'],
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
-                    'name', 'points', 'total_score', 'wins'
+                    'name',
+                    'win',
+                    'lose',
+                    'points',
                 ],
             ]);
         }

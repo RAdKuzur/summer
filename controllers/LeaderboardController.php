@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\tournament_event\Squad;
 use app\repositories\tournament_event\GameRepository;
 use app\repositories\tournament_event\SquadRepository;
 use app\repositories\tournament_event\SquadStudentGameRepository;
@@ -35,27 +36,18 @@ class LeaderboardController extends Controller
         $this->tournamentRepository = $tournamentRepository;
         parent::__construct($id, $module, $config);
     }
-
     public function actionIndex($tournamentId){
-        $squadQuery = $this->squadRepository->getByTournamentIdQuery($tournamentId);
-        $squadsQuery = (new \yii\db\Query())
-            ->select([
-                's.id AS squad_id',
-                's.name AS squad_name',
-                'SUM(ssg.score) AS total_score',
-            ])
-            ->from('squad s')
-            ->leftJoin('squad_student ss', 's.id = ss.squad_id')
-            ->leftJoin('squad_student_game ssg', 'ss.id = ssg.squad_student_id')
-            ->groupBy(['s.id', 's.name'])
-            ->orderBy(['total_score' => SORT_DESC]) // Сортировка по убыванию
-            ->all();
+        /* @var $squad Squad */
         $tournament = $this->tournamentRepository->getById($tournamentId);
         $squads = $this->squadRepository->getByTournamentId($tournamentId);
+        foreach ($squads as $squad){
+            $this->squadRepository->setWins($squad);
+        }
+        $squadQuery = $this->squadRepository->getByTournamentIdQuery($tournamentId);
+        $squadQuery->orderBy(['win' => SORT_DESC]);
         $dataProvider = new ActiveDataProvider([
             'query' => $squadQuery,
         ]);
-
         return $this->render('index' ,[
             'dataProvider' => $dataProvider,
             'tournament' => $tournament,

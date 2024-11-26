@@ -4,12 +4,14 @@ namespace app\controllers;
 
 use app\helpers\DrawHelper;
 
+use app\models\tournament_event\general\SquadStudent;
 use app\models\tournament_event\Squad;
 use app\models\tournament_event\Tournament;
 use app\repositories\tournament_event\GameRepository;
 use app\repositories\tournament_event\SquadRepository;
 use app\repositories\tournament_event\SquadStudentGameRepository;
 use app\repositories\tournament_event\SquadStudentRepository;
+use app\repositories\tournament_event\StudentRepository;
 use app\repositories\tournament_event\TournamentRepository;
 use app\services\tournament_event\DrawService;
 use yii\data\ActiveDataProvider;
@@ -23,6 +25,7 @@ class DrawController extends Controller
     public SquadStudentRepository $squadStudentRepository;
     public SquadRepository $squadRepository;
     public SquadStudentGameRepository $squadStudentGameRepository;
+    public StudentRepository $studentRepository;
     public function __construct(
         $id,
         $module,
@@ -32,6 +35,7 @@ class DrawController extends Controller
         SquadStudentRepository $squadStudentRepository,
         SquadRepository $squadRepository,
         SquadStudentGameRepository $squadStudentGameRepository,
+        StudentRepository $studentRepository,
         $config = [])
     {
         $this->tournamentRepository = $tournamentRepository;
@@ -40,6 +44,7 @@ class DrawController extends Controller
         $this->squadStudentRepository = $squadStudentRepository;
         $this->squadRepository = $squadRepository;
         $this->squadStudentGameRepository = $squadStudentGameRepository;
+        $this->studentRepository = $studentRepository;
         parent::__construct($id, $module, $config);
     }
     public function actionIndex($tournamentId){
@@ -54,6 +59,7 @@ class DrawController extends Controller
     public function actionCreate($tournamentId, $tour){
         /* @var $tournament Tournament */
         $tournament = $this->tournamentRepository->getById($tournamentId);
+        $typeButton = 0;
         /* play-off system
         $this->drawService->checkWinners($tournamentId, $tour);
         if($tour == 1) {
@@ -73,6 +79,9 @@ class DrawController extends Controller
         // swiss system
         /* @var $squad Squad */
         $squads = $this->squadRepository->getByTournamentId($tournamentId);
+        foreach ($squads as $squad){
+            $this->squadRepository->setWins($squad);
+        }
         $this->drawService->checkWinners($tournamentId, $tour);
         if($tour == 1) {
             foreach ($squads as $squad) {
@@ -83,7 +92,7 @@ class DrawController extends Controller
         }
         else {
             foreach ($squads as $squad) {
-                $squad->total_score = $squad->getPoints();
+                $squad->total_score = $squad->getPoints() + $squad->getScore();
                 $squad->save();
             }
             $squadList = $this->drawService->createSwissSquad($squads);
@@ -115,7 +124,7 @@ class DrawController extends Controller
                     var_dump('Ошибка, колво команд не равно 2^n');
                 }
                 if (count($squadList) != 0) {
-                    return $this->redirect(['champ']);
+                    return $this->redirect(['champ', 'tournamentId' => $tournamentId]);
                 }
             }
         }
@@ -123,12 +132,40 @@ class DrawController extends Controller
             'tournamentId' => $tournament->id,
         ]);
     }
-    public function actionChamp(){
-        return $this->render('champ');
-    }
-    public function actionUpdate($id){
-        //
-        var_dump($id);
+    public function actionChamp($tournamentId){
+        $tournament = $this->tournamentRepository->getById($tournamentId);
+        $tour = $tournament->current_tour;
+        $championSquad = $this->gameRepository->getWinnerSquadId($tour, $tournamentId);
+        $champStudents = $this->squadStudentRepository->getBySquadId($championSquad[0]->id);
+        foreach ($champStudents as $champStudent) {
+            $student = $this->studentRepository->getById($champStudent->student_id);
+            $student->tournament_score = $student->getTournamentScore();
+            $student->save();
+        }
+        $dataProvider = new ActiveDataProvider([
+            'query' => SquadStudent::find()
+                ->select([
+                    'squad_student.*',
+                    'student.surname',
+                    'student.name',
+                    'student.patronymic',
+                    'student.tournament_score'
+                ])
+                ->joinWith(['student', 'squadStudentGames']) // Объединяем с таблицей студентов и играми
+                ->where(['squad_id' => $championSquad[0]->id])
+                ->groupBy('squad_student.id'), // Группируем по идентификатору студент
+            'sort' =>
+                ['attributes' => [
+                    'student.olymp_score',
+                    'student.tournament_score'
+                ],
+            ],
+        ]);
+        return $this->render('champ', [
+            'dataProvider' => $dataProvider,
+            'tournament' => $tournament,
+            'squad' => $championSquad[0]
+        ]);
     }
     public function actionView($id){
         $model = $this->gameRepository->getById($id);
@@ -153,6 +190,7 @@ class DrawController extends Controller
         $this->redirect(['view', 'id' => $gameId]);
     }
     public function actionDeleteDrawTournament($tournamentId){
+        /* @var $squad Squad*/
         $tournament = $this->tournamentRepository->getById($tournamentId);
         $tournament->current_tour = 0;
         $games = $this->gameRepository->getByTournamentId($tournamentId);
@@ -162,6 +200,12 @@ class DrawController extends Controller
                 $squadStudentGame->delete();
             }
             $game->delete();
+        }
+        $squads = $this->squadRepository->getByTournamentId($tournamentId);
+        foreach ($squads as $squad) {
+            $squad->win = 0;
+            $squad->total_score = 0;
+            $squad->save();
         }
         $tournament->save();
         return $this->redirect(['index', 'tournamentId' => $tournamentId]);

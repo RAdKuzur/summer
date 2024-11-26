@@ -19,9 +19,9 @@ class m241121_164021_add_student_table extends Migration
             'patronymic' => $this->string(1000)->notNull(),
             'school_id' => $this->integer()->notNull(),
             'olymp_score' => $this->integer()->notNull(),
+            'tournament_score' => $this->integer(),
         ]);
     }
-
     /**
      * {@inheritdoc}
      */

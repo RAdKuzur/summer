@@ -95,7 +95,7 @@ class GameRepository
             ->andWhere(['status' => 1])
             ->all();
         $secondWins = Game::find()
-            ->andWhere(['first_squad_id' => $squadId])
+            ->andWhere(['second_squad_id' => $squadId])
             ->andWhere(['tournament_id' => $tournamentId])
             ->andWhere(['status' => 2])
             ->all();

@@ -17,7 +17,8 @@ class m241121_164011_add_squad_table extends Migration
             'name' => $this->string(1000)->notNull(),
             'total_score' => $this->integer()->notNull(),
             'tournament_id' => $this->integer()->notNull(),
-            'school_id' => $this->integer(), // nullable field
+            'school_id' => $this->integer(),
+            'win' => $this->integer(),// nullable field
         ]);
     }
 

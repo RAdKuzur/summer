@@ -19,6 +19,9 @@ class SquadRepository
     public function getById($id){
         return Squad::findOne($id);
     }
+    public function getByIdQuery($id){
+        return Squad::find()->where(['id' => $id]);
+    }
     public function getByTournamentId($tournamentId){
         return Squad::find()->where(['tournament_id' => $tournamentId])->all();
     }
@@ -56,7 +59,7 @@ class SquadRepository
         $squadScore = 0;
         $squadStudents = $squadStudentRepository->getBySquadId($squadId);
         foreach ($squadStudents as $squadStudent) {
-            $squadStudentGames =$squadStudentGameRepository->getBySquadStudentId($squadStudent->id);
+            $squadStudentGames = $squadStudentGameRepository->getBySquadStudentId($squadStudent->id);
             $studentScore = 0;
             foreach ($squadStudentGames as $squadStudentGame) {
                 $studentScore = $studentScore + $squadStudentGame->score;
@@ -67,7 +70,13 @@ class SquadRepository
     }
     public function getWins($squadId, $tournamentId)
     {
+        /* @var $squad Squad */
         $gameRepository = new GameRepository($this);
         return $gameRepository->amountSquadWins($squadId, $tournamentId);
+    }
+    public function setWins(Squad $squad)
+    {
+        $squad->win = $squad->getWins();
+        $squad->save();
     }
 }

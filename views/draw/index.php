@@ -91,9 +91,24 @@ $this->registerJs($script);
         }
     ?>
     <?php Pjax::end(); ?>
-    <?=  Html::a("Провести жеребьёвку тура № ".($tournament->current_tour + 1),
-        Url::to(['create', 'tournamentId' => $tournament->id, 'tour' => $tournament->current_tour + 1]),
-        ['class' => 'btn btn-success']); ?>
+
+    <?php
+        if((count($games) == 0) || (count($games) > 1) && (count($games) != 2 ** $tournament->current_tour)) {
+            echo Html::a("Провести жеребьёвку тура № ".($tournament->current_tour + 1),
+                Url::to(['create', 'tournamentId' => $tournament->id, 'tour' => $tournament->current_tour + 1]),
+                ['class' => 'btn btn-success']);
+        }
+        if(count($games) == 2 ** $tournament->current_tour){
+            echo Html::a("Перейти к финалу",
+                Url::to(['create', 'tournamentId' => $tournament->id, 'tour' => $tournament->current_tour + 1]),
+                ['class' => 'btn btn-success']);
+        }
+        if(count($games) == 1){
+            echo Html::a("Определить победителя",
+                Url::to(['create', 'tournamentId' => $tournament->id, 'tour' => $tournament->current_tour + 1]),
+                ['class' => 'btn btn-success']);
+        }
+     ?>
     <?=  Html::a("Сбросить жеребьевку" ,
         Url::to(['delete-draw-tournament', 'tournamentId' => $tournament->id]),
         ['class' => 'btn btn-danger']); ?>
