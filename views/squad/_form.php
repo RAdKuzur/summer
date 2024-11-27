@@ -22,10 +22,13 @@ use yii\widgets\ActiveForm;
             // 'filterModel' => $searchModel,
             'columns' => [
                 ['class' => 'yii\grid\SerialColumn'],
-                'student',
+                [
+                    'attribute' => 'student',
+                    'header' => 'ФИО участника', // Название столбца
+                ],
                 [
                     'class' => 'yii\grid\DataColumn',
-                    'label' => 'Actions', // Заголовок столбца
+                    'label' => 'Действия', // Заголовок столбца
                     'format' => 'raw', // Чтобы использовать HTML
                     'value' => function ($model) {
                         return Html::a('Внести изменения', Url::to(['student/update', 'id' => $model->student_id]), ['class' => 'btn btn-success']) . ' ' .

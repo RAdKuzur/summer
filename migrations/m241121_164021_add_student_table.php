@@ -14,11 +14,11 @@ class m241121_164021_add_student_table extends Migration
     {
         $this->createTable('student', [
             'id' => $this->primaryKey(),
-            'surname' => $this->string(1000)->notNull(),
-            'name' => $this->string(1000)->notNull(),
-            'patronymic' => $this->string(1000)->notNull(),
+            'surname' => $this->string(1000),
+            'name' => $this->string(1000),
+            'patronymic' => $this->string(1000),
             'school_id' => $this->integer()->notNull(),
-            'olymp_score' => $this->integer()->notNull(),
+            'olymp_score' => $this->integer(),
             'tournament_score' => $this->integer(),
         ]);
     }

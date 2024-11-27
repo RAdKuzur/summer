@@ -41,4 +41,14 @@ class StudentRepository
         }
         return $score;
     }
+    public function insertByData($surname, $name, $patronymic, $schoolId, $score)
+    {
+        $model = new Student();
+        $model->surname = $surname;
+        $model->name = $name;
+        $model->patronymic = $patronymic;
+        $model->school_id = $schoolId;
+        $model->olymp_score = $score;
+        $model->save();
+    }
 }

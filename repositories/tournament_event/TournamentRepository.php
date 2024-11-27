@@ -39,4 +39,11 @@ class TournamentRepository
             $this->squadRepository->fill($item, $tournament_id);
         }
     }
+    public function initTournament($id, $name){
+        $tournament = new Tournament();
+        $tournament->id = $id;
+        $tournament->name = $name;
+        $tournament->current_tour = 0;
+        $tournament->save();
+    }
 }

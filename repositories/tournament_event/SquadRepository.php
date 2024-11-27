@@ -85,4 +85,14 @@ class SquadRepository
         $squad->win = $squad->getWins();
         $squad->save();
     }
+    public function insertByData($name, $schoolId, $tournamentId)
+    {
+        $model = new Squad();
+        $model->name = $name;
+        $model->school_id = $schoolId;
+        $model->total_score = 0;
+        $model->tournament_id = $tournamentId;
+        $model->win = 0;
+        $model->save();
+    }
 }
