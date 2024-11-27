@@ -13,7 +13,7 @@ use yii\widgets\Pjax;
 /* @var $tournament \app\models\tournament_event\Tournament */
 /* @var $games \app\models\tournament_event\Game */
 /* @var $dataProvider ActiveDataProvider*/
-$this->title = 'Жеребьёвка турнира '.$tournament->name;
+$this->title = 'Жеребьёвка турнира "'.$tournament->name.'"';
 $this->params['breadcrumbs'][] = ['label' => 'Турнир '.$tournament->name, 'url' => ['tournament/view', 'id' => $tournament->id]];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -31,6 +31,9 @@ $this->registerJs($script);
         Таблица матчей. <?php
         if ($tournament->current_tour != 0) {
             echo 'Тур ' . $tournament->current_tour;
+        }
+        if(count($games) == 1){
+            echo '. Финал';
         }
         ?>
     </h2>

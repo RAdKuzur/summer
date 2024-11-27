@@ -6,7 +6,7 @@ use yii\grid\GridView;
 /* @var $tournament \app\models\tournament_event\Tournament */
 /* @var $squad \app\models\tournament_event\Squad */
 /* @var $dataProvider ActiveDataProvider*/
-$this->title = 'Чемпион турнира '.$tournament->name;
+$this->title = 'Короли турнира "'.$tournament->name.'"';
 $this->params['breadcrumbs'][] = ['label' => 'Турнир '.$tournament->name, 'url' => ['tournament/view', 'id' => $tournament->id]];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <body background="back2.png" style="background-size: 100% 100%;">
 <div class="draw-champ-index">
     <h1> Команда <?php
-        echo $squad->name ?> - чемпионы турнира <?php $tournament->name ?>
+        echo '"'.$squad->name.'"' ?> - короли турнира <?php echo '"'.$tournament->name.'"' ?>
     </h1>
     <?php
     echo GridView::widget([
@@ -53,8 +53,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'student',
                 'header' => 'ФИО участника', // Название столбца
             ],
-            'student.olymp_score',
-            'student.tournament_score'
+            //'student.olymp_score',
+            //'student.tournament_score'
         ],
     ]);
     ?>

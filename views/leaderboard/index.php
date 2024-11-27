@@ -61,7 +61,7 @@ $this->registerJs($script);
     <?= Html::a("Refresh", ['index', 'tournamentId' => $tournament->id], ['class' => 'hidden', 'id' => 'refreshButton']) ?>
     <br>
     <?php
-        if($squads != NULL) {
+        if ($squads != NULL) {
             echo GridView::widget([
                 'dataProvider' => $dataProvider,
                 'options' => ['class' => 'table table-striped table-bordered'],
@@ -70,14 +70,24 @@ $this->registerJs($script);
                     'name',
                     [
                         'attribute' => 'win',
-                        'label' => 'Результаты', // Название объединенного столбца
+                        'label' => 'Результаты команды (победы-поражения)',
                         'value' => function ($model) {
                             return $model->getWins() . '-' . $model->getLoses();
                         },
-                        'format' => 'raw', // Разрешает форматирование HTML
+                        'format' => 'raw',
                     ],
-                    'points',
-                ]
+                    [
+                        'attribute' => 'points',
+                        'label' => 'Набранные в турнире баллы',
+                    ],
+                ],
+                'rowOptions' => function ($model, $key, $index, $grid) {
+                    // Подсвечиваем первые два ряда зелёным цветом
+                    if ($index < 2) {
+                        return ['style' => 'background-color: #0da82a; color: white;'];
+                    }
+                    return [];
+                },
             ]);
         }
         else { ?>

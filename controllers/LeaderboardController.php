@@ -47,6 +47,7 @@ class LeaderboardController extends Controller
         $squadQuery->orderBy(['win' => SORT_DESC]);
         $dataProvider = new ActiveDataProvider([
             'query' => $squadQuery,
+            'pagination' => false,
         ]);
         return $this->render('index' ,[
             'dataProvider' => $dataProvider,
