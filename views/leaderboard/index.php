@@ -54,7 +54,7 @@ $(document).ready(function() {
 JS;
 $this->registerJs($script);
 ?>
-<body background="back2.png" style="background-size: 100% 100%;">
+<body background="back2.png" style="background-size: cover; background-repeat: no-repeat;">
 <div class="leaderboard-index">
     <h1><?= Html::encode($this->title) ?></h1>
     <?php Pjax::begin(['id' => 'pjax-container']); ?>
