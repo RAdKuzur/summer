@@ -12,7 +12,7 @@ use yii\widgets\Pjax;
 /* @var $tournament \app\models\tournament_event\Tournament */
 /* @var $squads \app\models\tournament_event\Game */
 /* @var $dataProvider ActiveDataProvider*/
-$this->title = 'Матчи турнира '.$tournament->name;
+$this->title = 'Таблица лидеров '.$tournament->name;
 $this->params['breadcrumbs'][] = ['label' => 'Турнир '.$tournament->name, 'url' => ['tournament/view', 'id' => $tournament->id]];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
