@@ -3,56 +3,171 @@ use yii\helpers\Html;
 use yii\widgets\Pjax;
 ?>
 
-
 <?php
-// Сначала подготовим PHP-переменные для JS
-$team1Score = $scores[0]->total_score ?? 0;
-$team2Score = $scores[1]->total_score ?? 0;
 
 $script = <<< JS
+
+var isDragonDead = false;
+
 // Глобальные функции
 function updateDragonHealth() {
     const scoreData = $('#score-data');
     if (!scoreData.length) return;
-
-    const team1Score = parseFloat(scoreData.data('team1Score')) || 0;
-    const team2Score = parseFloat(scoreData.data('team2Score')) || 0;
-    const totalDamage = team1Score + team2Score;
+   
+    // Получаем значения и преобразуем в числа
+    const team1Score = parseInt(scoreData.data('team1Score')) || 0;
+    const team2Score = parseInt(scoreData.data('team2Score')) || 0;
+    
+    // Рассчитываем суммарный урон и здоровье с проверкой
+    const totalDamage = Math.min(team1Score + team2Score, 100);
     const dragonHealth = Math.max(0, 100 - totalDamage);
+    const healthPercent = Math.max(0, Math.min(100, dragonHealth));
 
+     // Если дракон мертв и здоровье все еще 0, ничего не делаем
+    if (isDragonDead && healthPercent <= 0) {
+        return;
+    }
+    
+    // Обновляем полосу здоровья
     const healthBar = $('#dragon-health-bar');
-    healthBar.css('width', dragonHealth + '%');
-    $('#dragon-hp-text').text(dragonHealth);
+    healthBar.css('width', healthPercent + '%');
+    
+    // Обновляем текстовое отображение
+    $('#dragon-hp-text').text(healthPercent);
 
-    if (dragonHealth <= 20) {
+    // Получаем элементы для управления изображением и звуком
+    const dragonHead = $('#DragonHead img');
+    const deathSound = document.getElementById('dragon-death-sound');
+
+    // Обработка состояний здоровья
+    if (healthPercent <= 0) {
+        // Состояние при нулевом здоровье
+        healthBar.css('background', 'linear-gradient(135deg, #FF0000, #990000)');
+        healthBar.parent().addClass('zero-health');
+        healthBar.parent().removeClass('low-health');
+        healthBar.css('opacity', '0.7');
+        healthBar.parent().css('box-shadow', '0 0 15px rgba(255, 0, 0, 0.8)');
+        
+        // Меняем изображение на яйцо
+        if (dragonHead.attr('src') !== 'dragon-egg.jpg') {
+            dragonHead.attr('src', 'dragon-egg.jpg');
+        }
+        console.log("BEFORE")
+       
+        healthBar.addClass('was-zero');
+         
+        // Останавливаем автоматическое обновление
+        isDragonDead = true;
+        clearInterval(refreshInterval);
+        
+        showVictoryMessage()
+        console.log("AFTER")
+    } 
+    else if (healthPercent <= 30) {
+        // Состояние при низком здоровье
         healthBar.css('background', 'linear-gradient(135deg, #FF5722, #F44336)');
         healthBar.parent().addClass('low-health');
-    } else {
+        healthBar.parent().removeClass('zero-health');
+        healthBar.css('opacity', '1');
+        
+        // Возвращаем изображение дракона (если было яйцо)
+        if (dragonHead.attr('src') !== 'dragon3.png') {
+            dragonHead.attr('src', 'dragon3.png');
+        }
+        
+        healthBar.removeClass('was-zero');
+    } 
+    else {
+        // Нормальное состояние
         healthBar.css('background', 'linear-gradient(135deg, #D0A2E8, #A467EA)');
-        healthBar.parent().removeClass('low-health');
+        healthBar.parent().removeClass('low-health zero-health');
+        healthBar.css('opacity', '1');
+        
+        // Возвращаем изображение дракона (если было яйцо)
+        if (dragonHead.attr('src') !== 'dragon3.png') {
+            dragonHead.attr('src', 'dragon3.png');
+        }
+        
+        healthBar.removeClass('was-zero');
     }
 }
 
+function showVictoryMessage() {
+    // Создаем элемент сообщения
+    const message = $('<div>', {
+        id: 'victory-message',
+        css: {
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            color: 'gold',
+            padding: '20px',
+            borderRadius: '10px',
+            fontSize: '32px',
+            fontFamily: 'Minecraft, sans-serif',
+            textAlign: 'center',
+            zIndex: '9999',
+            border: '3px solid gold'
+        },
+        text: 'ДРАКОН ПОБЕЖДЁН!'
+    });
+    
+    $('body').append(message);
+}
+
+
+
 function applyViewMode(mode) {
     if (mode === 'dragon') {
+        // Основные элементы
         $('#score-table').hide();
+        $('#timerblock').hide();
+        $('#damage').show();
         $('#dragon-health-container').show();
         $('#toggle-view-mode').text('Обычный режим');
+         $('#DragonHead').show();
+        // Применяем стили режима дракона
+        $('body').addClass('dragon-mode');
+        $('footer').addClass('dragon-mode-footer');
+        $('nav.navbar').addClass('dragon-mode-navbar');
+        
+        // Если нужно изменить цвет текста в других элементах
+        $('.some-text-element').addClass('dragon-mode-text');
+        
         updateDragonHealth();
     } else {
+        // Возвращаем обычный режим
+        
         $('#score-table').show();
         $('#dragon-health-container').hide();
+        $('#damage').hide();
         $('#toggle-view-mode').text('Режим дракона');
+        $('#timerblock').show();
+        $('#DragonHead').hide();
+        
+        // Удаляем классы режима дракона
+        $('body').removeClass('dragon-mode');
+        $('footer').removeClass('dragon-mode-footer');
+        $('nav.navbar').removeClass('dragon-mode-navbar');
+        $('.some-text-element').removeClass('dragon-mode-text');
     }
     localStorage.setItem('viewMode', mode);
 }
 
-// Инициализация при загрузке
+var refreshInterval;
+
 $(document).ready(function() {
-    // Устанавливаем интервал обновления
-    setInterval(function(){ 
-        $('#refreshButton').click(); 
-    }, 500);
+    // Устанавливаем интервал обновления только если дракон жив
+    refreshInterval = setInterval(function(){ 
+        if (!isDragonDead) {
+            $('#refreshButton').click(); 
+        }
+    }, 1000);
+    
+    // Обновляем здоровье дракона сразу при загрузке
+    updateDragonHealth();
     
     // Применяем сохраненный режим
     const savedMode = localStorage.getItem('viewMode') || 'table';
@@ -116,16 +231,10 @@ $(document).ready(function() {
         resetBtn.disabled = true;
     });
 });
-
 // Обработчик PJAX
 $(document).on('pjax:success', function() {
-    // Обновляем данные в скрытом контейнере
-    const scoreData = $('#score-data');
-    if (scoreData.length) {
-        scoreData.data('team1Score', $team1Score);
-        scoreData.data('team2Score', $team2Score);
-    }
-
+     // Сначала обновляем здоровье дракона
+    updateDragonHealth();
     // Применяем текущий режим
     const currentMode = localStorage.getItem('viewMode') || 'table';
     applyViewMode(currentMode);
@@ -137,7 +246,7 @@ $this->registerJs($script);
 <button id="toggle-view-mode" style="
     top: 100px;
     right: 10px;
-    background: #8B4513;
+    background: rgba(139, 0, 139, 0.7);
     color: white;
     border: none;
     padding: 8px 15px;
@@ -148,7 +257,6 @@ $this->registerJs($script);
 ">
     Переключить вид
 </button>
-
 <style>
     table {
         width: 90%;
@@ -176,6 +284,34 @@ $this->registerJs($script);
         background: gold;
     }
 
+    #DragonHead img {
+        height: 500px;
+        width: 500px;
+        object-fit: contain; /* Это обеспечит правильное масштабирование */
+        transition: all 0.5s ease; /* Плавное изменение изображения */
+    }
+
+    .dragon-mode {
+        background: linear-gradient(135deg, #000000, #2E0854, #5D3FD3) !important;
+        color: #fff !important;
+    }
+
+    .dragon-mode-footer {
+        background-color: #1a0033 !important;
+        border-top: 1px solid #5D3FD3 !important;
+        color: #fff !important;
+    }
+
+    .dragon-mode-navbar {
+        background-color: #0d001a !important;
+        border-bottom: 1px solid #5D3FD3 !important;
+    }
+
+    .dragon-mode-text {
+        color: #fff !important;
+    }
+
+
     /* Стили для полосы здоровья Эндердракона */
     #dragon-health-container {
         display: none;
@@ -192,11 +328,42 @@ $this->registerJs($script);
         overflow: hidden;
         box-shadow: 0 0 10px rgba(139, 0, 139, 0.7);
     }
+
     .dragon-health-inner {
         height: 100%;
         width: 100%;
         transition: width 0.5s ease-in-out;
+        position: relative; /* Добавляем для z-index */
+        z-index: 1; /* Меньше чем у сегментов */
     }
+
+    .health-segment {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        width: 4px;
+        background: linear-gradient(to bottom,
+        rgba(255, 255, 255, 0.8) 0%,
+        rgba(200, 200, 255, 0.6) 50%,
+        rgba(255, 255, 255, 0.8) 100%);
+        z-index: 2; /* Больше чем у health-inner */
+        box-shadow:
+                0 0 3px rgba(0, 0, 0, 0.8),
+                inset 0 0 5px rgba(255, 255, 255, 0.5);
+        pointer-events: none; /* Чтобы не мешали взаимодействию */
+    }
+
+    /* Контейнер для сегментов */
+    .segments-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 3;
+        pointer-events: none;
+    }
+
     .dragon-health-text {
         font-family: 'Minecraft', sans-serif;
         font-size: 32px; /* Немного больше */
@@ -212,23 +379,14 @@ $this->registerJs($script);
         border-radius: 10px;
         display: inline-block;
     }
-    .health-segment {
-        position: absolute;
-        height: 100%;
-        width: 4px; /* Немного шире */
-        background: linear-gradient(to bottom,
-        rgba(255, 255, 255, 0.8) 0%,
-        rgba(200, 200, 255, 0.6) 50%,
-        rgba(255, 255, 255, 0.8) 100%);
-        z-index: 10;
-        box-shadow:
-                0 0 3px rgba(0, 0, 0, 0.8),
-                inset 0 0 5px rgba(255, 255, 255, 0.5);
-    }
 
-    /* В стили добавить */
+    /* Стили для состояний */
     .low-health {
         animation: pulse 1s infinite alternate;
+    }
+
+    .zero-health {
+        animation: pulse-fast 0.5s infinite alternate;
     }
 
     @keyframes pulse {
@@ -236,27 +394,19 @@ $this->registerJs($script);
         100% { box-shadow: 0 0 25px rgba(244, 67, 54, 0.9); }
     }
 
-
+    @keyframes pulse-fast {
+        0% { box-shadow: 0 0 5px rgba(255, 0, 0, 0.7); }
+        100% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.9); }
+    }
 </style>
+
+<div id="DragonHead" class="text-center my-3">
+    <img src="dragon3.png" style="height: 500px; width: 500px">
+</div>
 
 <?php Pjax::begin(['id' => 'score-pjax', 'enablePushState' => false]); ?>
 <?= Html::a("Обновить", ['team/team-view', 'id' => $scores[0]->team_id], ['class' => 'hidden', 'id' => 'refreshButton']) ?>
 <br>
-
-
-<!-- Контейнер для полосы здоровья Эндердракона -->
-<div id="dragon-health-container">
-    <div class="dragon-health-bar">
-        <div class="dragon-health-inner" id="dragon-health-bar"></div>
-        <!-- Добавляем сегменты для стиля Minecraft -->
-        <?php for ($i = 1; $i < 10; $i++): ?>
-            <div class="health-segment" style="left: <?= $i * 10 ?>%"></div>
-        <?php endfor; ?>
-    </div>
-    <div class="dragon-health-text">
-        Здоровье дракона: <span id="dragon-hp-text">100</span> / 100
-    </div>
-</div>
 
 
 <div id="score-data"
@@ -264,6 +414,22 @@ $this->registerJs($script);
      data-team2-score="<?= $scores[1]->total_score ?? 0 ?>"
      style="display: none">
 </div>
+
+<!-- Контейнер для полосы здоровья Эндердракона -->
+<div id="dragon-health-container">
+    <div class="dragon-health-bar">
+        <div class="dragon-health-inner" id="dragon-health-bar"></div>
+        <div class="segments-container">
+            <?php for ($i = 1; $i < 10; $i++): ?>
+                <div class="health-segment" style="left: <?= $i * 10 ?>%"></div>
+            <?php endfor; ?>
+        </div>
+    </div>
+    <div class="dragon-health-text">
+        Здоровье дракона: <span id="dragon-hp-text">100</span> / 100
+    </div>
+</div>
+
 
 <!-- Основная таблица со счетами команд -->
 <div id="score-table">
@@ -286,7 +452,32 @@ $this->registerJs($script);
 
 <?php Pjax::end(); ?>
 
-<div style="width: 100%">
+<!--<div id="damage" class="d-none text-center my-3" style="display: none !important">-->
+<!--    --><?php
+//    $buttonStyle = '
+//        background: rgba(139, 0, 139, 0.7);
+//        color: white;
+//        border: none;
+//        padding: 8px 15px;
+//        border-radius: 5px;
+//        cursor: pointer;
+//        font-family: Minecraft, sans-serif;
+//        margin: 10px;
+//    ';
+//
+//    echo Html::a('Произвести выстрел', \yii\helpers\Url::to(['site/plus-score', 'numb' => 5, 'id' => $scores[0]->id, 'branch' => 1]), [
+//        'style' => $buttonStyle,
+//        'class' => 'm-3'
+//    ]);
+//
+//    echo Html::a('Произвести выстрел №2', \yii\helpers\Url::to(['site/plus-score', 'numb' => 5, 'id' => $scores[1]->id, 'branch' => 1]), [
+//        'style' => $buttonStyle,
+//        'class' => 'm-3'
+//    ]);
+//    ?>
+<!--</div>-->
+
+<div id="timerblock" style="width: 100%">
     <table>
         <tr>
             <td>
@@ -299,7 +490,6 @@ $this->registerJs($script);
             </td>
         </tr>
     </table>
-
 
 </div>
 

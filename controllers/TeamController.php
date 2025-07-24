@@ -151,8 +151,6 @@ class TeamController extends Controller
             'timer' => $timer,
         ]);
     }
-
-
     public function actionTimer()
     {
         $seconds = Yii::$app->request->post('sec');

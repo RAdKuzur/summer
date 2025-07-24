@@ -55,7 +55,8 @@ class History extends \yii\db\ActiveRecord
     {
         $this->score = $score;
         $this->party_team_id = $party_team_id;
-        $this->date_time = date('-m-d h:i:s');
+        //$this->date_time = date('-m-d h:i:s'); // Неправильно
+        $this->date_time = date('Y-m-d H:i:s');
     }
     /**
      * Gets query for [[PartyTeam]].
