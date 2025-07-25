@@ -37,7 +37,6 @@ function updateDragonHealth() {
 
     // Получаем элементы для управления изображением и звуком
     const dragonHead = $('#DragonHead img');
-    const deathSound = document.getElementById('dragon-death-sound');
 
     // Обработка состояний здоровья
     if (healthPercent <= 0) {
@@ -121,6 +120,10 @@ function showVictoryMessage() {
 
 function applyViewMode(mode) {
     if (mode === 'dragon') {
+        if (isDragonDead)
+        {
+            $('#victory-message').show();
+        }
         // Основные элементы
         $('#score-table').hide();
         $('#timerblock').hide();
@@ -139,7 +142,7 @@ function applyViewMode(mode) {
         updateDragonHealth();
     } else {
         // Возвращаем обычный режим
-        
+        $('#victory-message').hide();
         $('#score-table').show();
         $('#dragon-health-container').hide();
         $('#damage').hide();
@@ -148,6 +151,7 @@ function applyViewMode(mode) {
         $('#DragonHead').hide();
         
         // Удаляем классы режима дракона
+        
         $('body').removeClass('dragon-mode');
         $('footer').removeClass('dragon-mode-footer');
         $('nav.navbar').removeClass('dragon-mode-navbar');
